@@ -148,6 +148,7 @@ schemes and overall platform activity.
 
 ---
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/994259c5-0771-4912-bd31-9f1f5d48762f" />
 
 
 
