@@ -332,6 +332,8 @@ public class ApprovalDAOImpl implements ApprovalDAO {
                 )
         );
 
+        rule.setBusinessConstitution(resultSet.getString("business_constitution"));
+
         rule.setBusinessActivity(
                 resultSet.getString(
                         "business_activity"
@@ -381,6 +383,16 @@ public class ApprovalDAOImpl implements ApprovalDAO {
                         "maximum_investment"
                 )
         );
+
+        rule.setMinimumAnnualTurnover(resultSet.getBigDecimal("minimum_annual_turnover"));
+        rule.setMaximumAnnualTurnover(resultSet.getBigDecimal("maximum_annual_turnover"));
+        rule.setInterstateSupplyRequired(getNullableBoolean(resultSet, "interstate_supply_required"));
+        rule.setHandlesPersonalDataRequired(getNullableBoolean(resultSet, "handles_personal_data_required"));
+        rule.setStpiBenefitsRequired(getNullableBoolean(resultSet, "stpi_benefits_required"));
+        rule.setSezUnitRequired(getNullableBoolean(resultSet, "sez_unit_required"));
+        rule.setCertInApplicabilityRequired(getNullableBoolean(resultSet, "cert_in_applicability_required"));
+        rule.setTrademarkProtectionRequired(getNullableBoolean(resultSet, "trademark_protection_required"));
+        rule.setSoftwareCopyrightRequired(getNullableBoolean(resultSet, "software_copyright_required"));
 
         rule.setHazardousMaterialRequired(
                 getNullableBoolean(

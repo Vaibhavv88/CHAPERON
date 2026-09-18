@@ -19,7 +19,8 @@ public class BusinessApprovalDAOImpl
             "(business_id, approval_id, requirement_status, " +
             "priority_level, reason_text, current_status, " +
             "mandatory, generated_at, updated_at) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+            "VALUES (?, ?, ?, ?, ?, ?, ?, " +
+            "CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
     private static final String FIND_BY_BUSINESS_ID =
             "SELECT ba.*, " +
@@ -52,6 +53,19 @@ public class BusinessApprovalDAOImpl
     private static final String DELETE_BY_BUSINESS_ID =
             "DELETE FROM business_approvals " +
             "WHERE business_id = ?";
+
+    /*
+     * IMPORTANT:
+     * Only recommendations that were never started
+     * are regenerated when business profile changes.
+     *
+     * Existing application history is preserved.
+     */
+    private static final String DELETE_NOT_STARTED_BY_BUSINESS_ID =
+            "DELETE FROM business_approvals " +
+            "WHERE business_id = ? " +
+            "AND (current_status IS NULL " +
+            "OR UPPER(current_status) = 'NOT_STARTED')";
 
     @Override
     public boolean saveBusinessApproval(
@@ -246,6 +260,32 @@ public class BusinessApprovalDAOImpl
             PreparedStatement preparedStatement =
                     connection.prepareStatement(
                             DELETE_BY_BUSINESS_ID
+                    )
+        ) {
+
+            preparedStatement.setLong(
+                    1,
+                    businessId
+            );
+
+            preparedStatement.executeUpdate();
+
+            return true;
+        }
+    }
+
+    @Override
+    public boolean deleteNotStartedByBusinessId(
+            long businessId
+    ) throws SQLException {
+
+        try (
+            Connection connection =
+                    DBConnection.getConnection();
+
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(
+                            DELETE_NOT_STARTED_BY_BUSINESS_ID
                     )
         ) {
 

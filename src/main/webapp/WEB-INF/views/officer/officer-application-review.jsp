@@ -1544,198 +1544,352 @@ textarea.form-control {
 
 }
 
-
-
 /* ============================================================
+
    CHAPERON GOVERNMENT OFFICER PREMIUM THEME
+
    ============================================================ */
+
 :root {
+
     --officer-green: #0b9c65;
+
     --officer-green-dark: #087a50;
+
     --officer-green-deep: #075d3e;
+
     --officer-soft: #eaf8f1;
+
     --officer-pale: #f4fbf7;
+
     --officer-border: #dcebe4;
+
     --officer-navy: #0d1d39;
+
 }
 
 body {
+
     font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+
     background: radial-gradient(circle at 90% 4%, rgba(23,174,111,.08), transparent 27%), linear-gradient(145deg,#f5faf7,#fbfdfc);
+
     color: #172742;
+
 }
 
 .topbar {
+
     position: sticky;
+
     top: 0;
+
     z-index: 1000;
+
     min-height: 78px;
+
     padding: 0 4%;
+
     background: rgba(255,255,255,.95);
+
     border-bottom: 1px solid #e1ebe6;
+
     box-shadow: 0 5px 24px rgba(31,82,61,.05);
+
     backdrop-filter: blur(16px);
+
 }
 
 .logo {
+
     position: relative;
+
     min-height: 52px;
+
     padding-left: 62px;
+
     display: flex;
+
     align-items: center;
+
     color: #1254c5;
+
     font-size: 23px;
+
     font-weight: 900;
+
     letter-spacing: .2px;
+
 }
 
 .logo::before {
+
     content: "";
+
     position: absolute;
+
     left: 0;
+
     top: 50%;
+
     width: 51px;
+
     height: 51px;
+
     transform: translateY(-50%);
+
     border-radius: 50%;
+
     background-image: url("<%= request.getContextPath() %>/images/chaperon-logo.jpeg");
+
     background-size: 92px 92px;
+
     background-position: center -7px;
+
     background-repeat: no-repeat;
+
     background-color: #fff;
+
 }
 
 .logo::after {
+
     content: "GUIDE. CONNECT. COMPLY. GET APPROVED.";
+
     position: absolute;
+
     left: 62px;
+
     top: 39px;
+
     color: #1454bd;
+
     font-size: 6px;
+
     font-weight: 900;
+
     white-space: nowrap;
+
 }
 
 .nav { gap: 9px; }
+
 .nav a {
+
     min-height: 39px;
+
     padding: 0 13px;
+
     display: inline-flex;
+
     align-items: center;
+
     justify-content: center;
+
     border-radius: 9px;
+
     color: #335646;
+
     background: #f0f8f4;
+
     border: 1px solid #dbece4;
+
     font-size: 10px;
+
     font-weight: 800;
+
 }
+
 .nav a:hover { color: #fff; background: var(--officer-green); }
+
 .nav a:last-child { color:#b63b35; background:#fff1ef; border-color:#f6dedb; }
+
 .nav a:last-child:hover { color:#fff; background:#c4433b; }
 
 .page { padding: 31px 20px 65px; }
+
 .container { max-width: 1240px; }
 
 .hero {
+
     position: relative;
+
     overflow: hidden;
+
     background: radial-gradient(circle at 91% 5%, rgba(64,225,162,.32), transparent 31%), linear-gradient(130deg,#075c3e,#078257);
+
     border-radius: 21px;
+
     padding: 31px 34px;
+
     margin-bottom: 21px;
+
     box-shadow: 0 17px 38px rgba(7,107,70,.19);
+
 }
+
 .hero::before {
+
     content:"";
+
     position:absolute;
+
     width:230px;
+
     height:230px;
+
     right:-90px;
+
     bottom:-145px;
+
     border:34px solid rgba(255,255,255,.06);
+
     border-radius:50%;
+
 }
+
 .hero .badge {
+
     position: relative;
+
     z-index: 2;
+
     background: rgba(255,255,255,.10);
+
     border: 1px solid rgba(255,255,255,.20);
+
     color: #dcf8e9;
+
 }
+
 .hero h1, .hero p, .hero strong { position:relative; z-index:2; }
+
 .hero p { color:#dbf5e8; }
+
 .hero .status { position:relative; z-index:2; color:#08784e; background:#dcf7e9; }
 
 .card, .documents, .action-card {
+
     position: relative;
+
     overflow: hidden;
+
     border-color: var(--officer-border);
+
     box-shadow: 0 7px 22px rgba(38,76,59,.045);
+
 }
+
 .card::before, .documents::before, .action-card::before {
+
     content:"";
+
     position:absolute;
+
     left:0;
+
     top:0;
+
     width:4px;
+
     height:100%;
+
     background: linear-gradient(180deg,var(--officer-green),#48c28d);
+
 }
+
 .card h2, .documents h2, .action-card h2 { color: var(--officer-navy); }
 
 .info-row { border-bottom-color:#edf2ef; }
+
 .label { color:#8493a4; }
+
 .value { color:#283d55; }
 
 .query-card {
+
     border-color:#eedba7;
+
     background:linear-gradient(145deg,#fffdf7,#fffaf0);
+
     box-shadow:0 7px 22px rgba(103,83,28,.045);
+
 }
+
 .query-status { color:#875c00; background:#ffedbd; }
+
 .response-box { border-color:#cbe8d8; background:linear-gradient(145deg,#edf9f3,#f6fcf8); }
+
 .response-box h3 { color:#167348; }
 
 .readiness { color:#08784e; }
+
 .inspection-card {
+
     background:linear-gradient(145deg,#f8fcfa,#eff9f4);
+
     border-color:#cce7da;
+
     box-shadow:0 7px 22px rgba(34,79,59,.045);
+
 }
+
 .inspection-badge { color:#08774d; background:#e5f7ed; }
 
 .action-card {
+
     border-color:#cfe4d9;
+
     background:radial-gradient(circle at 95% 0%,rgba(15,165,101,.07),transparent 31%),#fff;
+
 }
 
 .primary-btn {
+
     background: linear-gradient(135deg,#0b9c65,#087c51);
+
     color:#fff;
+
     box-shadow:0 7px 16px rgba(11,156,101,.18);
+
 }
+
 .primary-btn:hover { opacity:1; transform:translateY(-1px); box-shadow:0 10px 21px rgba(11,156,101,.25); }
+
 .resolve-btn { background:linear-gradient(135deg,#0a975f,#087549); }
+
 .secondary-btn { background:#edf5f1; color:#36584a; border:1px solid #d7e7df; }
+
 .danger-btn { background:linear-gradient(135deg,#d04a42,#b63832); color:#fff; }
 
 .form-box {
+
     border-color:#d8e8e0;
+
     background:linear-gradient(145deg,#f7fbf9,#f1f8f5);
+
 }
+
 .form-control { border-color:#d4e1db; font-family:"Segoe UI",Arial,Helvetica,sans-serif; }
+
 .form-control:focus { border-color:var(--officer-green); box-shadow:0 0 0 3px rgba(11,156,101,.10); }
 
 .success-notice { background:#e9f8f0; color:#137147; }
+
 .review-notice { background:#edf9f3; color:#08764d; }
 
 @media(max-width:800px) {
+
     .logo { font-size:19px; padding-left:54px; }
+
     .logo::before { width:44px; height:44px; background-size:79px 79px; }
+
     .logo::after { display:none; }
+
     .topbar { padding:10px 16px; }
+
     .hero { padding:25px 21px; }
+
 }
 
 </style>
@@ -2490,6 +2644,15 @@ if (message != null &&
 
     </div>
 
+    <div class="info-row">
+        <span class="label">Annual Turnover</span>
+        <span class="value">
+            <%= request.getAttribute("annualTurnover") != null
+                    ? request.getAttribute("annualTurnover")
+                    : "Not Available" %>
+        </span>
+    </div>
+
 </div>
 
 
@@ -2726,6 +2889,41 @@ if (message != null &&
 
         </span>
 
+    </div>
+
+    <div class="info-row">
+        <span class="label">Interstate Supply</span>
+        <span class="value"><%= Boolean.TRUE.equals(request.getAttribute("interstateSupply")) ? "Yes" : "No" %></span>
+    </div>
+
+    <div class="info-row">
+        <span class="label">Handles Personal Data</span>
+        <span class="value"><%= Boolean.TRUE.equals(request.getAttribute("handlesPersonalData")) ? "Yes" : "No" %></span>
+    </div>
+
+    <div class="info-row">
+        <span class="label">Seeking STPI Benefits</span>
+        <span class="value"><%= Boolean.TRUE.equals(request.getAttribute("seeksStpiBenefits")) ? "Yes" : "No" %></span>
+    </div>
+
+    <div class="info-row">
+        <span class="label">Located in SEZ</span>
+        <span class="value"><%= Boolean.TRUE.equals(request.getAttribute("locatedInSez")) ? "Yes" : "No" %></span>
+    </div>
+
+    <div class="info-row">
+        <span class="label">CERT-In Applicable</span>
+        <span class="value"><%= Boolean.TRUE.equals(request.getAttribute("certInApplicable")) ? "Yes" : "No" %></span>
+    </div>
+
+    <div class="info-row">
+        <span class="label">Trademark Protection</span>
+        <span class="value"><%= Boolean.TRUE.equals(request.getAttribute("seeksTrademarkProtection")) ? "Yes" : "No" %></span>
+    </div>
+
+    <div class="info-row">
+        <span class="label">Software Copyright</span>
+        <span class="value"><%= Boolean.TRUE.equals(request.getAttribute("seeksSoftwareCopyright")) ? "Yes" : "No" %></span>
     </div>
 
 </div>
@@ -3307,6 +3505,27 @@ if (documents != null &&
             </strong>
 
         </div>
+
+
+        <%
+        if (document.getUploadedDocumentId() != null) {
+        %>
+
+        <div style="margin-top:10px;">
+
+            <a
+                href="<%= request.getContextPath() %>/officer/document-view?applicationId=<%= applicationId %>&documentId=<%= document.getUploadedDocumentId() %>"
+                class="secondary-btn">
+
+                View Document
+
+            </a>
+
+        </div>
+
+        <%
+        }
+        %>
 
 
 

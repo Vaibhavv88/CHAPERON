@@ -2172,6 +2172,26 @@ a {
             </div>
 
 
+         <a
+    href="<%= ctx %>/officer/gis-verification"
+    style="
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 18px;
+        border-radius: 12px;
+        background: #eaf5ff;
+        color: #075fc7;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 800;
+        border: 1px solid #cfe5ff;
+        white-space: nowrap;
+    ">
+
+    GIS Verification
+
+</a>
         </a>
 
 
@@ -2181,7 +2201,7 @@ a {
             href="<%= ctx %>/logout">
 
             Logout
-
+      
         </a>
 
 

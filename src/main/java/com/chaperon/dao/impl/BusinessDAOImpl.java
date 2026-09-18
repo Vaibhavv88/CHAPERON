@@ -17,10 +17,12 @@ public class BusinessDAOImpl implements BusinessDAO {
             "(user_id, business_name, business_constitution, " +
             "business_activity, industry, state, district, taluka, " +
             "industrial_area, pin_code, project_stage, investment_amount, " +
-            "employee_count, land_area, built_up_area, power_requirement, " +
+            "annual_turnover, interstate_supply, employee_count, land_area, built_up_area, power_requirement, " +
             "water_requirement, pollution_category, hazardous_material, " +
-            "boiler_used, industrial_waste, groundwater_required) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "boiler_used, industrial_waste, groundwater_required, handles_personal_data, " +
+            "seeks_stpi_benefits, located_in_sez, cert_in_applicable, " +
+            "seeks_trademark_protection, seeks_software_copyright) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private static final String FIND_BY_USER_ID =
             "SELECT * FROM businesses WHERE user_id = ? ORDER BY business_id DESC LIMIT 1";
@@ -44,6 +46,8 @@ public class BusinessDAOImpl implements BusinessDAO {
             "pin_code = ?, " +
             "project_stage = ?, " +
             "investment_amount = ?, " +
+            "annual_turnover = ?, " +
+            "interstate_supply = ?, " +
             "employee_count = ?, " +
             "land_area = ?, " +
             "built_up_area = ?, " +
@@ -53,7 +57,13 @@ public class BusinessDAOImpl implements BusinessDAO {
             "hazardous_material = ?, " +
             "boiler_used = ?, " +
             "industrial_waste = ?, " +
-            "groundwater_required = ? " +
+            "groundwater_required = ?, " +
+            "handles_personal_data = ?, " +
+            "seeks_stpi_benefits = ?, " +
+            "located_in_sez = ?, " +
+            "cert_in_applicable = ?, " +
+            "seeks_trademark_protection = ?, " +
+            "seeks_software_copyright = ? " +
             "WHERE business_id = ?";
 
     @Override
@@ -234,6 +244,9 @@ public class BusinessDAOImpl implements BusinessDAO {
                     business.getInvestmentAmount()
             );
 
+            preparedStatement.setBigDecimal(index++, business.getAnnualTurnover());
+            preparedStatement.setBoolean(index++, business.isInterstateSupply());
+
             preparedStatement.setInt(
                     index++,
                     business.getEmployeeCount()
@@ -283,6 +296,13 @@ public class BusinessDAOImpl implements BusinessDAO {
                     index++,
                     business.isGroundwaterRequired()
             );
+
+            preparedStatement.setBoolean(index++, business.isHandlesPersonalData());
+            preparedStatement.setBoolean(index++, business.isSeeksStpiBenefits());
+            preparedStatement.setBoolean(index++, business.isLocatedInSez());
+            preparedStatement.setBoolean(index++, business.isCertInApplicable());
+            preparedStatement.setBoolean(index++, business.isSeeksTrademarkProtection());
+            preparedStatement.setBoolean(index++, business.isSeeksSoftwareCopyright());
 
             preparedStatement.setLong(
                     index,
@@ -391,6 +411,9 @@ public class BusinessDAOImpl implements BusinessDAO {
                 business.getInvestmentAmount()
         );
 
+        preparedStatement.setBigDecimal(index++, business.getAnnualTurnover());
+        preparedStatement.setBoolean(index++, business.isInterstateSupply());
+
         preparedStatement.setInt(
                 index++,
                 business.getEmployeeCount()
@@ -437,9 +460,16 @@ public class BusinessDAOImpl implements BusinessDAO {
         );
 
         preparedStatement.setBoolean(
-                index,
+                index++,
                 business.isGroundwaterRequired()
         );
+
+        preparedStatement.setBoolean(index++, business.isHandlesPersonalData());
+        preparedStatement.setBoolean(index++, business.isSeeksStpiBenefits());
+        preparedStatement.setBoolean(index++, business.isLocatedInSez());
+        preparedStatement.setBoolean(index++, business.isCertInApplicable());
+        preparedStatement.setBoolean(index++, business.isSeeksTrademarkProtection());
+        preparedStatement.setBoolean(index, business.isSeeksSoftwareCopyright());
     }
 
     private Business mapResultSetToBusiness(
@@ -526,6 +556,9 @@ public class BusinessDAOImpl implements BusinessDAO {
                 )
         );
 
+        business.setAnnualTurnover(resultSet.getBigDecimal("annual_turnover"));
+        business.setInterstateSupply(resultSet.getBoolean("interstate_supply"));
+
         business.setEmployeeCount(
                 resultSet.getInt(
                         "employee_count"
@@ -585,6 +618,13 @@ public class BusinessDAOImpl implements BusinessDAO {
                         "groundwater_required"
                 )
         );
+
+        business.setHandlesPersonalData(resultSet.getBoolean("handles_personal_data"));
+        business.setSeeksStpiBenefits(resultSet.getBoolean("seeks_stpi_benefits"));
+        business.setLocatedInSez(resultSet.getBoolean("located_in_sez"));
+        business.setCertInApplicable(resultSet.getBoolean("cert_in_applicable"));
+        business.setSeeksTrademarkProtection(resultSet.getBoolean("seeks_trademark_protection"));
+        business.setSeeksSoftwareCopyright(resultSet.getBoolean("seeks_software_copyright"));
 
         business.setCreatedAt(
                 resultSet.getTimestamp(

@@ -24,6 +24,17 @@ public interface BusinessApprovalDAO {
             long businessId
     ) throws SQLException;
 
+    /*
+     * Deletes only recommendations which have
+     * not been started yet.
+     *
+     * Submitted / approved / rejected history
+     * is preserved.
+     */
+    boolean deleteNotStartedByBusinessId(
+            long businessId
+    ) throws SQLException;
+
     BusinessApproval findByBusinessAndApproval(
             long businessId,
             long approvalId

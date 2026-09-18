@@ -51,6 +51,7 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                 "a.approval_code, " +
                 "r.rule_name, " +
                 "r.industry, " +
+                "r.business_constitution, " +
                 "r.business_activity, " +
                 "r.project_stage, " +
                 "r.pollution_category, " +
@@ -59,6 +60,15 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                 "r.maximum_employee_count, " +
                 "r.minimum_investment, " +
                 "r.maximum_investment, " +
+                "r.minimum_annual_turnover, " +
+                "r.maximum_annual_turnover, " +
+                "r.interstate_supply_required, " +
+                "r.handles_personal_data_required, " +
+                "r.stpi_benefits_required, " +
+                "r.sez_unit_required, " +
+                "r.cert_in_applicability_required, " +
+                "r.trademark_protection_required, " +
+                "r.software_copyright_required, " +
                 "r.hazardous_material_required, " +
                 "r.boiler_required, " +
                 "r.groundwater_required, " +
@@ -145,6 +155,13 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                     );
 
                     rule.put(
+                            "businessConstitution",
+                            resultSet.getString(
+                                    "business_constitution"
+                            )
+                    );
+
+                    rule.put(
                             "businessActivity",
                             resultSet.getString(
                                     "business_activity"
@@ -201,6 +218,35 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                                     "maximum_investment"
                             )
                     );
+
+                    rule.put(
+                            "minimumAnnualTurnover",
+                            resultSet.getBigDecimal(
+                                    "minimum_annual_turnover"
+                            )
+                    );
+
+                    rule.put(
+                            "maximumAnnualTurnover",
+                            resultSet.getBigDecimal(
+                                    "maximum_annual_turnover"
+                            )
+                    );
+
+                    rule.put("interstateSupplyRequired",
+                            getNullableBoolean(resultSet, "interstate_supply_required"));
+                    rule.put("handlesPersonalDataRequired",
+                            getNullableBoolean(resultSet, "handles_personal_data_required"));
+                    rule.put("stpiBenefitsRequired",
+                            getNullableBoolean(resultSet, "stpi_benefits_required"));
+                    rule.put("sezUnitRequired",
+                            getNullableBoolean(resultSet, "sez_unit_required"));
+                    rule.put("certInApplicabilityRequired",
+                            getNullableBoolean(resultSet, "cert_in_applicability_required"));
+                    rule.put("trademarkProtectionRequired",
+                            getNullableBoolean(resultSet, "trademark_protection_required"));
+                    rule.put("softwareCopyrightRequired",
+                            getNullableBoolean(resultSet, "software_copyright_required"));
 
                     rule.put(
                             "hazardousMaterialRequired",
@@ -460,6 +506,7 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                     "approval_id, " +
                     "rule_name, " +
                     "industry, " +
+                    "business_constitution, " +
                     "business_activity, " +
                     "project_stage, " +
                     "pollution_category, " +
@@ -468,6 +515,15 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                     "maximum_employee_count, " +
                     "minimum_investment, " +
                     "maximum_investment, " +
+                    "minimum_annual_turnover, " +
+                    "maximum_annual_turnover, " +
+                    "interstate_supply_required, " +
+                    "handles_personal_data_required, " +
+                    "stpi_benefits_required, " +
+                    "sez_unit_required, " +
+                    "cert_in_applicability_required, " +
+                    "trademark_protection_required, " +
+                    "software_copyright_required, " +
                     "hazardous_material_required, " +
                     "boiler_required, " +
                     "groundwater_required, " +
@@ -475,7 +531,7 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                     "priority, " +
                     "recommendation_reason, " +
                     "active" +
-                    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
+                    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
 
 
             try (
@@ -585,6 +641,7 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                     "approval_id = ?, " +
                     "rule_name = ?, " +
                     "industry = ?, " +
+                    "business_constitution = ?, " +
                     "business_activity = ?, " +
                     "project_stage = ?, " +
                     "pollution_category = ?, " +
@@ -593,6 +650,15 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                     "maximum_employee_count = ?, " +
                     "minimum_investment = ?, " +
                     "maximum_investment = ?, " +
+                    "minimum_annual_turnover = ?, " +
+                    "maximum_annual_turnover = ?, " +
+                    "interstate_supply_required = ?, " +
+                    "handles_personal_data_required = ?, " +
+                    "stpi_benefits_required = ?, " +
+                    "sez_unit_required = ?, " +
+                    "cert_in_applicability_required = ?, " +
+                    "trademark_protection_required = ?, " +
+                    "software_copyright_required = ?, " +
                     "hazardous_material_required = ?, " +
                     "boiler_required = ?, " +
                     "groundwater_required = ?, " +
@@ -613,7 +679,7 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                 );
 
                 statement.setLong(
-                        18,
+                        28,
                         ruleId
                 );
 
@@ -744,6 +810,13 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                         )
                 );
 
+        data.businessConstitution =
+                clean(
+                        request.getParameter(
+                                "businessConstitution"
+                        )
+                );
+
         data.businessActivity =
                 clean(
                         request.getParameter(
@@ -827,6 +900,20 @@ public class AdminApprovalRuleServlet extends HttpServlet {
                             )
                     );
 
+            data.minimumAnnualTurnover =
+                    parseNullableDecimal(
+                            request.getParameter(
+                                    "minimumAnnualTurnover"
+                            )
+                    );
+
+            data.maximumAnnualTurnover =
+                    parseNullableDecimal(
+                            request.getParameter(
+                                    "maximumAnnualTurnover"
+                            )
+                    );
+
         } catch (Exception e) {
 
             data.error =
@@ -847,6 +934,12 @@ public class AdminApprovalRuleServlet extends HttpServlet {
             ) ||
             isNegative(
                     data.maximumInvestment
+            ) ||
+            isNegative(
+                    data.minimumAnnualTurnover
+            ) ||
+            isNegative(
+                    data.maximumAnnualTurnover
             )) {
 
             data.error =
@@ -879,6 +972,31 @@ public class AdminApprovalRuleServlet extends HttpServlet {
 
             return data;
         }
+
+        if (data.minimumAnnualTurnover != null &&
+            data.maximumAnnualTurnover != null &&
+            data.minimumAnnualTurnover.compareTo(
+                    data.maximumAnnualTurnover
+            ) > 0) {
+
+            data.error = "turnover-range";
+            return data;
+        }
+
+        data.interstateSupplyRequired = parseNullableBoolean(
+                request.getParameter("interstateSupplyRequired"));
+        data.handlesPersonalDataRequired = parseNullableBoolean(
+                request.getParameter("handlesPersonalDataRequired"));
+        data.stpiBenefitsRequired = parseNullableBoolean(
+                request.getParameter("stpiBenefitsRequired"));
+        data.sezUnitRequired = parseNullableBoolean(
+                request.getParameter("sezUnitRequired"));
+        data.certInApplicabilityRequired = parseNullableBoolean(
+                request.getParameter("certInApplicabilityRequired"));
+        data.trademarkProtectionRequired = parseNullableBoolean(
+                request.getParameter("trademarkProtectionRequired"));
+        data.softwareCopyrightRequired = parseNullableBoolean(
+                request.getParameter("softwareCopyrightRequired"));
 
 
         data.hazardousMaterialRequired =
@@ -943,115 +1061,36 @@ public class AdminApprovalRuleServlet extends HttpServlet {
             PreparedStatement statement,
             RuleFormData data
     ) throws Exception {
+        statement.setLong(1, data.approvalId);
+        statement.setString(2, data.ruleName);
+        statement.setString(3, emptyToNull(data.industry));
+        statement.setString(4, emptyToNull(data.businessConstitution));
+        statement.setString(5, emptyToNull(data.businessActivity));
+        statement.setString(6, emptyToNull(data.projectStage));
+        statement.setString(7, emptyToNull(data.pollutionCategory));
+        statement.setString(8, emptyToNull(data.state));
 
-        statement.setLong(
-                1,
-                data.approvalId
-        );
+        setNullableInteger(statement, 9, data.minimumEmployeeCount);
+        setNullableInteger(statement, 10, data.maximumEmployeeCount);
+        setNullableDecimal(statement, 11, data.minimumInvestment);
+        setNullableDecimal(statement, 12, data.maximumInvestment);
+        setNullableDecimal(statement, 13, data.minimumAnnualTurnover);
+        setNullableDecimal(statement, 14, data.maximumAnnualTurnover);
 
-        statement.setString(
-                2,
-                data.ruleName
-        );
+        setNullableBoolean(statement, 15, data.interstateSupplyRequired);
+        setNullableBoolean(statement, 16, data.handlesPersonalDataRequired);
+        setNullableBoolean(statement, 17, data.stpiBenefitsRequired);
+        setNullableBoolean(statement, 18, data.sezUnitRequired);
+        setNullableBoolean(statement, 19, data.certInApplicabilityRequired);
+        setNullableBoolean(statement, 20, data.trademarkProtectionRequired);
+        setNullableBoolean(statement, 21, data.softwareCopyrightRequired);
+        setNullableBoolean(statement, 22, data.hazardousMaterialRequired);
+        setNullableBoolean(statement, 23, data.boilerRequired);
+        setNullableBoolean(statement, 24, data.groundwaterRequired);
+        setNullableBoolean(statement, 25, data.industrialWasteRequired);
 
-        statement.setString(
-                3,
-                emptyToNull(
-                        data.industry
-                )
-        );
-
-        statement.setString(
-                4,
-                emptyToNull(
-                        data.businessActivity
-                )
-        );
-
-        statement.setString(
-                5,
-                emptyToNull(
-                        data.projectStage
-                )
-        );
-
-        statement.setString(
-                6,
-                emptyToNull(
-                        data.pollutionCategory
-                )
-        );
-
-        statement.setString(
-                7,
-                emptyToNull(
-                        data.state
-                )
-        );
-
-
-        setNullableInteger(
-                statement,
-                8,
-                data.minimumEmployeeCount
-        );
-
-        setNullableInteger(
-                statement,
-                9,
-                data.maximumEmployeeCount
-        );
-
-
-        setNullableDecimal(
-                statement,
-                10,
-                data.minimumInvestment
-        );
-
-        setNullableDecimal(
-                statement,
-                11,
-                data.maximumInvestment
-        );
-
-
-        setNullableBoolean(
-                statement,
-                12,
-                data.hazardousMaterialRequired
-        );
-
-        setNullableBoolean(
-                statement,
-                13,
-                data.boilerRequired
-        );
-
-        setNullableBoolean(
-                statement,
-                14,
-                data.groundwaterRequired
-        );
-
-        setNullableBoolean(
-                statement,
-                15,
-                data.industrialWasteRequired
-        );
-
-
-        statement.setString(
-                16,
-                data.priority
-        );
-
-        statement.setString(
-                17,
-                emptyToNull(
-                        data.recommendationReason
-                )
-        );
+        statement.setString(26, data.priority);
+        statement.setString(27, emptyToNull(data.recommendationReason));
     }
 
 
@@ -1383,6 +1422,7 @@ public class AdminApprovalRuleServlet extends HttpServlet {
         private String ruleName;
 
         private String industry;
+        private String businessConstitution;
         private String businessActivity;
         private String projectStage;
         private String pollutionCategory;
@@ -1393,6 +1433,16 @@ public class AdminApprovalRuleServlet extends HttpServlet {
 
         private BigDecimal minimumInvestment;
         private BigDecimal maximumInvestment;
+        private BigDecimal minimumAnnualTurnover;
+        private BigDecimal maximumAnnualTurnover;
+
+        private Boolean interstateSupplyRequired;
+        private Boolean handlesPersonalDataRequired;
+        private Boolean stpiBenefitsRequired;
+        private Boolean sezUnitRequired;
+        private Boolean certInApplicabilityRequired;
+        private Boolean trademarkProtectionRequired;
+        private Boolean softwareCopyrightRequired;
 
         private Boolean hazardousMaterialRequired;
         private Boolean boilerRequired;

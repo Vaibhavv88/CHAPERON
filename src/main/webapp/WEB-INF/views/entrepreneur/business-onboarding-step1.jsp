@@ -31,6 +31,8 @@
 
     String errorMessage =
             (String) request.getAttribute("errorMessage");
+
+    String ctx = request.getContextPath();
 %>
 
 <!DOCTYPE html>
@@ -38,477 +40,1314 @@
 
 <head>
 
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Business Profile | CHAPERON</title>
-
-    <style>
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f8fc;
-            color: #14213d;
-        }
-
-        .topbar {
-            height: 70px;
-            background: #ffffff;
-            border-bottom: 1px solid #e5eaf0;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 0 6%;
-        }
-
-        .logo {
-            font-size: 25px;
-            font-weight: 800;
-            color: #0b1f3a;
-        }
-
-        .top-text {
-            color: #718096;
-            font-size: 14px;
-        }
-
-        .page {
-            min-height: calc(100vh - 70px);
-            padding: 45px 20px;
-        }
-
-        .container {
-            max-width: 850px;
-            margin: auto;
-        }
-
-        .back-link {
-            display: inline-block;
-            text-decoration: none;
-            color: #5e6d82;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-
-        .back-link:hover {
-            color: #1677e8;
-        }
-
-        .step-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            margin-bottom: 12px;
-        }
-
-        .step-label {
-            color: #1677e8;
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .percentage {
-            color: #66758a;
-            font-size: 14px;
-        }
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Business Profile | CHAPERON</title>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #1267e8;
+    --primary-dark: #0748aa;
+    --primary-soft: #edf5ff;
+    --cyan: #16b8e8;
+    --navy: #071d3d;
+    --text: #172a46;
+    --muted: #718198;
+    --border: #dce6f2;
+    --background: #f4f8fd;
+    --white: #ffffff;
+    --danger: #dc3545;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(
+            circle at 8% 15%,
+            rgba(22, 103, 232, 0.08),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 92% 70%,
+            rgba(22, 184, 232, 0.07),
+            transparent 25%
+        ),
+        var(--background);
+    color: var(--text);
+}
+
+
+/* =========================================================
+   TOP HEADER
+   ========================================================= */
+
+.topbar {
+    height: 82px;
+    background: rgba(255,255,255,0.96);
+    border-bottom: 1px solid #e6edf6;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 6%;
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    box-shadow: 0 4px 20px rgba(15,45,85,0.04);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.logo-box {
+    width: 49px;
+    height: 49px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background: #ffffff;
+    border: 1px solid #e1e9f3;
+
+    box-shadow: 0 5px 14px rgba(10,65,150,0.10);
+}
+
+.logo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
 
-        .progress {
-            height: 8px;
-            background: #e3eaf3;
-            border-radius: 20px;
-            overflow: hidden;
+.brand-info {
+    display: flex;
+    flex-direction: column;
+}
 
-            margin-bottom: 35px;
-        }
+.brand-name {
+    font-size: 23px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    color: var(--navy);
+}
 
-        .progress-bar {
-            width: 20%;
-            height: 100%;
-            background: #1677e8;
-            border-radius: 20px;
-        }
+.brand-tagline {
+    margin-top: 6px;
+    font-size: 9px;
+    letter-spacing: 1.15px;
+    font-weight: 700;
+    color: #69809d;
+}
 
-        .card {
-            background: #ffffff;
-            border: 1px solid #e6ebf1;
-            border-radius: 18px;
+.top-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
-            padding: 38px;
+    font-size: 13px;
+    color: #6c7f99;
+}
 
-            box-shadow:
-                0 10px 30px rgba(21, 45, 80, 0.07);
-        }
+.top-right-icon {
+    width: 34px;
+    height: 34px;
 
-        .card h1 {
-            font-size: 30px;
-            color: #10213b;
-            margin-bottom: 10px;
-        }
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        .intro {
-            color: #6d7b8e;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
+    border-radius: 50%;
 
-        .error-box {
-            background: #fff1f1;
-            border: 1px solid #f3caca;
-            color: #a62c2c;
+    background: #edf5ff;
+    color: var(--primary);
 
-            padding: 13px 15px;
-            border-radius: 9px;
+    font-weight: 800;
+}
 
-            margin-bottom: 22px;
-        }
 
-        .form-group {
-            margin-bottom: 25px;
-        }
+/* =========================================================
+   MAIN PAGE
+   ========================================================= */
 
-        label {
-            display: block;
+.page {
+    padding: 35px 20px 60px;
+}
 
-            font-weight: 700;
-            font-size: 15px;
+.container {
+    width: 100%;
+    max-width: 1030px;
+    margin: 0 auto;
+}
 
-            margin-bottom: 9px;
 
-            color: #263750;
-        }
+/* =========================================================
+   BACK LINK
+   ========================================================= */
 
-        .required {
-            color: #d13c3c;
-        }
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 
-        .help {
-            font-weight: normal;
-            color: #7b889a;
-            font-size: 13px;
-        }
+    text-decoration: none;
 
-        input[type="text"],
-        select {
+    color: #62758f;
 
-            width: 100%;
-            height: 50px;
+    font-size: 14px;
+    font-weight: 600;
 
-            border: 1px solid #ccd6e2;
-            border-radius: 10px;
+    margin-bottom: 25px;
 
-            padding: 0 14px;
+    transition: 0.2s;
+}
 
-            font-size: 15px;
-            color: #263750;
+.back-link:hover {
+    color: var(--primary);
+    transform: translateX(-2px);
+}
 
-            background: #ffffff;
+.back-circle {
+    width: 29px;
+    height: 29px;
 
-            outline: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-            transition: 0.2s;
-        }
+    border-radius: 8px;
 
-        input[type="text"]:focus,
-        select:focus {
+    background: #ffffff;
+    border: 1px solid #dce6f2;
 
-            border-color: #1677e8;
+    box-shadow: 0 3px 10px rgba(20,50,90,0.05);
+}
 
-            box-shadow:
-                0 0 0 3px rgba(22, 119, 232, 0.10);
-        }
 
-        .activity-options {
+/* =========================================================
+   PAGE INTRO
+   ========================================================= */
 
-            display: grid;
+.page-heading {
+    margin-bottom: 26px;
+}
 
-            grid-template-columns:
-                repeat(3, 1fr);
+.page-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
 
-            gap: 12px;
-        }
+    padding: 7px 12px;
 
-        .activity-card {
+    background: #eaf4ff;
+    color: var(--primary);
 
-            position: relative;
+    border: 1px solid #d3e8ff;
+    border-radius: 20px;
 
-            border: 1px solid #d7e0ea;
+    font-size: 11px;
+    font-weight: 800;
 
-            border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
 
-            padding: 18px;
+    margin-bottom: 12px;
+}
 
-            cursor: pointer;
+.page-heading h1 {
+    color: var(--navy);
+    font-size: 29px;
+    line-height: 1.2;
+    font-weight: 800;
+    margin-bottom: 7px;
+}
 
-            transition: 0.2s;
+.page-heading p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
 
-            background: #ffffff;
-        }
 
-        .activity-card:hover {
-            border-color: #1677e8;
-            background: #f7fbff;
-        }
+/* =========================================================
+   JOURNEY STEPPER
+   ========================================================= */
 
-        .activity-card input {
-            margin-right: 7px;
-        }
+.journey-card {
+    background: rgba(255,255,255,0.96);
 
-        .activity-title {
-            font-weight: 700;
-            color: #263750;
-        }
+    border: 1px solid #e0e9f4;
+    border-radius: 18px;
 
-        .activity-description {
+    padding: 22px 28px;
 
-            display: block;
+    margin-bottom: 24px;
 
-            color: #7c8999;
+    box-shadow: 0 10px 30px rgba(22,55,95,0.06);
+}
 
-            font-size: 12px;
+.journey-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-            margin-top: 7px;
+    margin-bottom: 21px;
+}
 
-            line-height: 1.4;
-        }
+.journey-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--navy);
+}
 
-        .info-box {
+.completion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
-            background: #eef6ff;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+}
 
-            border: 1px solid #d6e9ff;
+.completion-dot {
+    width: 8px;
+    height: 8px;
 
-            border-radius: 12px;
+    background: var(--primary);
+    border-radius: 50%;
 
-            padding: 16px;
+    box-shadow: 0 0 0 5px rgba(18,103,232,0.09);
+}
 
-            margin-top: 10px;
+.steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
 
-            color: #46627e;
+    position: relative;
+}
 
-            line-height: 1.5;
+.steps::before {
+    content: "";
 
-            font-size: 14px;
-        }
+    position: absolute;
 
-        .actions {
+    top: 18px;
+    left: 9%;
+    right: 9%;
 
-            display: flex;
+    height: 3px;
 
-            justify-content: space-between;
+    background: #e3ebf5;
 
-            align-items: center;
+    z-index: 0;
+}
 
-            margin-top: 35px;
-        }
+.step {
+    position: relative;
+    z-index: 1;
 
-        .cancel-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-            text-decoration: none;
+    text-align: center;
+}
 
-            color: #627187;
+.step-circle {
+    width: 38px;
+    height: 38px;
 
-            padding: 13px 18px;
+    border-radius: 50%;
 
-            border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-            font-weight: 600;
-        }
+    background: #ffffff;
 
-        .continue-btn {
+    border: 2px solid #d7e2ef;
 
-            border: none;
+    color: #8495aa;
 
-            background: #1677e8;
+    font-size: 13px;
+    font-weight: 800;
 
-            color: #ffffff;
+    margin-bottom: 9px;
+}
 
-            padding: 14px 25px;
+.step.active .step-circle {
+    color: #ffffff;
 
-            border-radius: 10px;
+    border-color: var(--primary);
 
-            font-size: 15px;
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #1a9bea
+        );
 
-            font-weight: 700;
+    box-shadow:
+        0 5px 15px rgba(18,103,232,0.28);
+}
 
-            cursor: pointer;
+.step-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8a98aa;
+}
 
-            transition: 0.2s;
-        }
+.step.active .step-name {
+    color: var(--primary);
+}
 
-        .continue-btn:hover {
-            background: #0e67cb;
-            transform: translateY(-1px);
-        }
+.progress-mobile {
+    display: none;
+}
 
-        .save-note {
 
-            text-align: center;
+/* =========================================================
+   FORM CARD
+   ========================================================= */
 
-            color: #8a96a5;
+.form-card {
+    background: rgba(255,255,255,0.98);
 
-            font-size: 13px;
+    border: 1px solid #dfe8f2;
 
-            margin-top: 20px;
-        }
+    border-radius: 22px;
 
-        @media (max-width: 700px) {
+    overflow: hidden;
 
-            .topbar {
-                padding: 0 20px;
-            }
+    box-shadow:
+        0 18px 50px rgba(17,50,90,0.08);
+}
 
-            .top-text {
-                display: none;
-            }
+.form-card-header {
+    position: relative;
 
-            .page {
-                padding: 25px 15px;
-            }
+    padding: 31px 38px 27px;
 
-            .card {
-                padding: 25px 20px;
-            }
+    background:
+        linear-gradient(
+            110deg,
+            #f9fcff 0%,
+            #edf6ff 100%
+        );
 
-            .card h1 {
-                font-size: 25px;
-            }
+    border-bottom: 1px solid #e0eaf5;
+}
 
-            .activity-options {
-                grid-template-columns: 1fr;
-            }
+.form-card-header::before {
+    content: "";
 
-            .actions {
-                flex-direction: column-reverse;
-                gap: 12px;
-            }
+    position: absolute;
 
-            .continue-btn,
-            .cancel-btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
+    left: 0;
+    top: 0;
+    bottom: 0;
 
-    </style>
+    width: 5px;
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--primary),
+            var(--cyan)
+        );
+}
+
+.section-label {
+    color: var(--primary);
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    margin-bottom: 8px;
+}
+
+.form-card-header h2 {
+    color: var(--navy);
+
+    font-size: 26px;
+    font-weight: 800;
+
+    margin-bottom: 8px;
+}
+
+.form-card-header p {
+    color: #6d7e94;
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    max-width: 700px;
+}
+
+.form-content {
+    padding: 34px 38px 38px;
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.error-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    padding: 14px 16px;
+
+    background: #fff4f4;
+    border: 1px solid #f3cccc;
+
+    border-radius: 11px;
+
+    color: #a72b2b;
+
+    font-size: 13px;
+    line-height: 1.5;
+
+    margin-bottom: 24px;
+}
+
+.error-icon {
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.form-group {
+    margin-bottom: 27px;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+
+    margin-bottom: 9px;
+
+    color: #203754;
+
+    font-size: 14px;
+    font-weight: 750;
+}
+
+.required {
+    color: #dc3d4c;
+}
+
+.help {
+    color: #8492a5;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.input-wrap {
+    position: relative;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    height: 52px;
+
+    padding: 0 15px;
+
+    border: 1px solid #cedbea;
+    border-radius: 11px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: #263a54;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    transition: 0.2s ease;
+}
+
+input[type="text"]:hover,
+select:hover {
+    border-color: #aabfd8;
+}
+
+input[type="text"]:focus,
+select:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 4px rgba(18,103,232,0.09);
+}
+
+input::placeholder {
+    color: #a0adbd;
+}
+
+
+/* =========================================================
+   ACTIVITY CARDS
+   ========================================================= */
+
+.activity-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 12px;
+}
+
+.activity-question {
+    color: #203754;
+
+    font-size: 14px;
+    font-weight: 750;
+}
+
+.selection-note {
+    color: #8a99ab;
+    font-size: 11px;
+}
+
+.activity-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 14px;
+}
+
+.activity-card {
+    position: relative;
+
+    min-height: 133px;
+
+    padding: 20px 18px;
+
+    border: 1.5px solid #d9e3ef;
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.activity-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #8bbcff;
+
+    box-shadow:
+        0 9px 22px rgba(21,92,185,0.09);
+}
+
+.activity-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.radio-indicator {
+    position: absolute;
+
+    right: 14px;
+    top: 14px;
+
+    width: 18px;
+    height: 18px;
+
+    border: 2px solid #c5d2e1;
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    transition: 0.2s;
+}
+
+.activity-card:has(input:checked) {
+    border-color: var(--primary);
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f1f7ff
+        );
+
+    box-shadow:
+        0 8px 22px rgba(18,103,232,0.12);
+}
+
+.activity-card:has(input:checked) .radio-indicator {
+    border: 5px solid var(--primary);
+}
+
+.activity-icon {
+    width: 39px;
+    height: 39px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #edf5ff;
+
+    color: var(--primary);
+
+    font-size: 18px;
+
+    margin-bottom: 13px;
+}
+
+.activity-card:has(input:checked) .activity-icon {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--cyan)
+        );
+}
+
+.activity-name {
+    display: block;
+
+    color: #1d334f;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    margin-bottom: 6px;
+}
+
+.activity-description {
+    display: block;
+
+    color: #7c8b9e;
+
+    font-size: 11.5px;
+    line-height: 1.45;
+
+    padding-right: 5px;
+}
+
+
+/* =========================================================
+   INFORMATION BOX
+   ========================================================= */
+
+.info-box {
+    display: flex;
+    gap: 13px;
+
+    margin-top: 5px;
+
+    padding: 16px 17px;
+
+    background:
+        linear-gradient(
+            100deg,
+            #eef7ff,
+            #f7fbff
+        );
+
+    border: 1px solid #d5e9ff;
+    border-radius: 12px;
+
+    color: #526d8c;
+
+    font-size: 12.5px;
+    line-height: 1.55;
+}
+
+.info-icon {
+    flex-shrink: 0;
+
+    width: 27px;
+    height: 27px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: #dceeff;
+    color: var(--primary);
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.info-box strong {
+    color: #244c7c;
+}
+
+
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 32px;
+
+    padding-top: 27px;
+
+    border-top: 1px solid #edf1f6;
+}
+
+.cancel-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 12px 16px;
+
+    color: #64768d;
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    border-radius: 9px;
+
+    transition: 0.2s;
+}
+
+.cancel-btn:hover {
+    color: var(--navy);
+    background: #f2f6fa;
+}
+
+.continue-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-width: 180px;
+
+    padding: 14px 22px;
+
+    border: none;
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1267e8,
+            #087ddc
+        );
+
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 7px 18px rgba(18,103,232,0.23);
+
+    transition: 0.2s;
+}
+
+.continue-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 22px rgba(18,103,232,0.30);
+}
+
+.arrow {
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   SAVE NOTE
+   ========================================================= */
+
+.save-note {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+
+    margin-top: 19px;
+
+    color: #8a98a9;
+
+    font-size: 11.5px;
+}
+
+.save-dot {
+    width: 6px;
+    height: 6px;
+
+    background: #26b37a;
+    border-radius: 50%;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    .activity-options {
+        grid-template-columns: 1fr;
+    }
+
+    .steps {
+        display: none;
+    }
+
+    .progress-mobile {
+        display: block;
+
+        height: 7px;
+
+        background: #e5edf6;
+
+        border-radius: 20px;
+
+        overflow: hidden;
+    }
+
+    .progress-mobile div {
+        width: 20%;
+        height: 100%;
+
+        background:
+            linear-gradient(
+                90deg,
+                var(--primary),
+                var(--cyan)
+            );
+    }
+
+    .journey-card {
+        padding: 20px;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .topbar {
+        height: 72px;
+        padding: 0 18px;
+    }
+
+    .logo-box {
+        width: 42px;
+        height: 42px;
+    }
+
+    .brand-name {
+        font-size: 19px;
+    }
+
+    .brand-tagline {
+        font-size: 7px;
+    }
+
+    .top-right {
+        display: none;
+    }
+
+    .page {
+        padding: 25px 14px 45px;
+    }
+
+    .page-heading h1 {
+        font-size: 25px;
+    }
+
+    .form-card-header {
+        padding: 25px 22px 22px;
+    }
+
+    .form-card-header h2 {
+        font-size: 22px;
+    }
+
+    .form-content {
+        padding: 26px 22px;
+    }
+
+    .actions {
+        flex-direction: column-reverse;
+        gap: 12px;
+    }
+
+    .continue-btn,
+    .cancel-btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .journey-top {
+        margin-bottom: 15px;
+    }
+}
+
+</style>
 
 </head>
 
+
 <body>
 
-<div class="topbar">
 
-    <div class="logo">
-        CHAPERON
-    </div>
+<!-- ======================================================
+     HEADER
+     ====================================================== -->
 
-    <div class="top-text">
-        Your guided business approval journey
-    </div>
+<header class="topbar">
 
-</div>
+    <div class="brand">
 
+        <div class="logo-box">
+            <img
+                src="<%= ctx %>/images/chaperon-logo.jpeg"
+                alt="CHAPERON Logo">
+        </div>
 
-<div class="page">
+        <div class="brand-info">
 
-    <div class="container">
-
-        <a class="back-link"
-           href="<%= request.getContextPath() %>/entrepreneur/dashboard">
-
-            ← Back to Dashboard
-
-        </a>
-
-
-        <div class="step-header">
-
-            <div class="step-label">
-                STEP 1 OF 5
+            <div class="brand-name">
+                CHAPERON
             </div>
 
-            <div class="percentage">
+            <div class="brand-tagline">
+                GUIDE. CONNECT. COMPLY. GET APPROVED.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="top-right">
+
+        <div class="top-right-icon">
+            ✓
+        </div>
+
+        <span>
+            Guided Business Approval Journey
+        </span>
+
+    </div>
+
+</header>
+
+
+
+<!-- ======================================================
+     PAGE
+     ====================================================== -->
+
+<main class="page">
+
+<div class="container">
+
+
+    <!-- BACK -->
+
+    <a class="back-link"
+       href="<%= ctx %>/entrepreneur/dashboard">
+
+        <span class="back-circle">
+            ←
+        </span>
+
+        Back to Dashboard
+
+    </a>
+
+
+
+    <!-- PAGE INTRO -->
+
+    <section class="page-heading">
+
+        <div class="page-badge">
+            ◆ Business Setup
+        </div>
+
+        <h1>
+            Build Your Business Profile
+        </h1>
+
+        <p>
+            Tell us about your business and CHAPERON will
+            personalize your approval and compliance journey.
+        </p>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         JOURNEY STEPPER
+         ================================================== -->
+
+    <section class="journey-card">
+
+        <div class="journey-top">
+
+            <div class="journey-title">
+                Business Profile Setup
+            </div>
+
+            <div class="completion">
+
+                <span class="completion-dot"></span>
+
                 20% Complete
+
             </div>
 
         </div>
 
 
-        <div class="progress">
+        <div class="steps">
 
-            <div class="progress-bar"></div>
+            <div class="step active">
+
+                <div class="step-circle">
+                    1
+                </div>
+
+                <div class="step-name">
+                    Business Basics
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-circle">
+                    2
+                </div>
+
+                <div class="step-name">
+                    Industry
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-circle">
+                    3
+                </div>
+
+                <div class="step-name">
+                    Location
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-circle">
+                    4
+                </div>
+
+                <div class="step-name">
+                    Project Details
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-circle">
+                    5
+                </div>
+
+                <div class="step-name">
+                    Compliance
+                </div>
+
+            </div>
 
         </div>
 
 
-        <div class="card">
+        <div class="progress-mobile">
+            <div></div>
+        </div>
 
-            <h1>
+    </section>
+
+
+
+    <!-- ==================================================
+         FORM CARD
+         ================================================== -->
+
+    <section class="form-card">
+
+
+        <div class="form-card-header">
+
+            <div class="section-label">
+                Step 01 · Business Basics
+            </div>
+
+            <h2>
                 Tell us about your business
-            </h1>
+            </h2>
 
-            <p class="intro">
-
-                Start with the basics. CHAPERON will use
-                this information to understand your business
-                and identify approvals that may apply to you.
-
+            <p>
+                Start with the basics. CHAPERON uses this
+                information to understand your business and
+                identify approvals that may apply to you.
             </p>
+
+        </div>
+
+
+
+        <div class="form-content">
 
 
             <% if (errorMessage != null) { %>
 
                 <div class="error-box">
-                    <%= errorMessage %>
+
+                    <span class="error-icon">
+                        !
+                    </span>
+
+                    <span>
+                        <%= errorMessage %>
+                    </span>
+
                 </div>
 
             <% } %>
 
 
-            <form method="post"
-                  action="<%= request.getContextPath() %>/entrepreneur/business-onboarding">
+
+            <form
+                method="post"
+                action="<%= ctx %>/entrepreneur/business-onboarding">
 
 
-                <!-- BUSINESS NAME -->
+                <!-- ======================================
+                     BUSINESS NAME
+                     ====================================== -->
 
                 <div class="form-group">
 
-                    <label for="businessName">
+                    <label
+                        class="form-label"
+                        for="businessName">
 
                         Business Name
-                        <span class="required">*</span>
+
+                        <span class="required">
+                            *
+                        </span>
 
                     </label>
 
-                    <input type="text"
-                           id="businessName"
-                           name="businessName"
-                           value="<%= businessName %>"
-                           placeholder="Example: ABC Foods Pvt Ltd"
-                           maxlength="150"
-                           required>
+
+                    <div class="input-wrap">
+
+                        <input
+                            type="text"
+                            id="businessName"
+                            name="businessName"
+                            value="<%= businessName %>"
+                            placeholder="Example: ABC Foods Pvt Ltd"
+                            maxlength="150"
+                            autocomplete="organization"
+                            required>
+
+                    </div>
 
                 </div>
 
 
-                <!-- BUSINESS CONSTITUTION -->
+
+                <!-- ======================================
+                     BUSINESS CONSTITUTION
+                     ====================================== -->
 
                 <div class="form-group">
 
-                    <label for="businessConstitution">
+                    <label
+                        class="form-label"
+                        for="businessConstitution">
 
                         Business Constitution
-                        <span class="required">*</span>
+
+                        <span class="required">
+                            *
+                        </span>
 
                         <span class="help">
                             — How is your business legally structured?
@@ -516,54 +1355,84 @@
 
                     </label>
 
-                    <select id="businessConstitution"
-                            name="businessConstitution"
-                            required>
+
+                    <select
+                        id="businessConstitution"
+                        name="businessConstitution"
+                        required>
 
                         <option value="">
                             Select business constitution
                         </option>
 
-                        <option value="Proprietorship"
+
+                        <option
+                            value="Proprietorship"
                             <%= "Proprietorship".equals(businessConstitution)
                                     ? "selected" : "" %>>
+
                             Proprietorship
+
                         </option>
 
-                        <option value="Partnership"
+
+                        <option
+                            value="Partnership"
                             <%= "Partnership".equals(businessConstitution)
                                     ? "selected" : "" %>>
+
                             Partnership
+
                         </option>
 
-                        <option value="LLP"
+
+                        <option
+                            value="LLP"
                             <%= "LLP".equals(businessConstitution)
                                     ? "selected" : "" %>>
+
                             LLP
+
                         </option>
 
-                        <option value="Private Limited"
+
+                        <option
+                            value="Private Limited"
                             <%= "Private Limited".equals(businessConstitution)
                                     ? "selected" : "" %>>
+
                             Private Limited
+
                         </option>
 
-                        <option value="Public Limited"
+
+                        <option
+                            value="Public Limited"
                             <%= "Public Limited".equals(businessConstitution)
                                     ? "selected" : "" %>>
+
                             Public Limited
+
                         </option>
 
-                        <option value="Startup"
+
+                        <option
+                            value="Startup"
                             <%= "Startup".equals(businessConstitution)
                                     ? "selected" : "" %>>
+
                             Startup
+
                         </option>
 
-                        <option value="Cooperative"
+
+                        <option
+                            value="Cooperative"
                             <%= "Cooperative".equals(businessConstitution)
                                     ? "selected" : "" %>>
+
                             Cooperative
+
                         </option>
 
                     </select>
@@ -571,99 +1440,124 @@
                 </div>
 
 
-                <!-- BUSINESS ACTIVITY -->
+
+                <!-- ======================================
+                     MAIN BUSINESS ACTIVITY
+                     ====================================== -->
 
                 <div class="form-group">
 
-                    <label>
+                    <div class="activity-title-row">
 
-                        Main Business Activity
-                        <span class="required">*</span>
+                        <div class="activity-question">
 
-                    </label>
+                            Main Business Activity
+
+                            <span class="required">
+                                *
+                            </span>
+
+                        </div>
+
+                        <div class="selection-note">
+                            Select one
+                        </div>
+
+                    </div>
+
 
 
                     <div class="activity-options">
 
 
+                        <!-- MANUFACTURING -->
+
                         <label class="activity-card">
 
-                            <div>
+                            <input
+                                type="radio"
+                                name="businessActivity"
+                                value="Manufacturing"
+                                <%= "Manufacturing".equals(businessActivity)
+                                        ? "checked" : "" %>
+                                required>
 
-                                <input type="radio"
-                                       name="businessActivity"
-                                       value="Manufacturing"
+                            <span class="radio-indicator"></span>
 
-                                    <%= "Manufacturing".equals(businessActivity)
-                                            ? "checked" : "" %>
 
-                                       required>
+                            <span class="activity-icon">
+                                ⚙
+                            </span>
 
-                                <span class="activity-title">
-                                    Manufacturing
-                                </span>
-
-                            </div>
+                            <span class="activity-name">
+                                Manufacturing
+                            </span>
 
                             <span class="activity-description">
-
                                 You manufacture or process
                                 physical products.
-
                             </span>
 
                         </label>
 
 
+
+                        <!-- SERVICE -->
+
                         <label class="activity-card">
 
-                            <div>
+                            <input
+                                type="radio"
+                                name="businessActivity"
+                                value="Service"
+                                <%= "Service".equals(businessActivity)
+                                        ? "checked" : "" %>>
 
-                                <input type="radio"
-                                       name="businessActivity"
-                                       value="Service"
+                            <span class="radio-indicator"></span>
 
-                                    <%= "Service".equals(businessActivity)
-                                            ? "checked" : "" %>>
 
-                                <span class="activity-title">
-                                    Service
-                                </span>
+                            <span class="activity-icon">
+                                ◇
+                            </span>
 
-                            </div>
+                            <span class="activity-name">
+                                Service
+                            </span>
 
                             <span class="activity-description">
-
-                                You primarily provide
-                                professional or commercial services.
-
+                                You primarily provide professional
+                                or commercial services.
                             </span>
 
                         </label>
 
 
+
+                        <!-- TRADING -->
+
                         <label class="activity-card">
 
-                            <div>
+                            <input
+                                type="radio"
+                                name="businessActivity"
+                                value="Trading"
+                                <%= "Trading".equals(businessActivity)
+                                        ? "checked" : "" %>>
 
-                                <input type="radio"
-                                       name="businessActivity"
-                                       value="Trading"
+                            <span class="radio-indicator"></span>
 
-                                    <%= "Trading".equals(businessActivity)
-                                            ? "checked" : "" %>>
 
-                                <span class="activity-title">
-                                    Trading
-                                </span>
+                            <span class="activity-icon">
+                                ⇄
+                            </span>
 
-                            </div>
+                            <span class="activity-name">
+                                Trading
+                            </span>
 
                             <span class="activity-description">
-
                                 You primarily buy and sell
                                 products or goods.
-
                             </span>
 
                         </label>
@@ -674,52 +1568,91 @@
                 </div>
 
 
+
+                <!-- ======================================
+                     INFORMATION
+                     ====================================== -->
+
                 <div class="info-box">
 
-                    Why are we asking this?
+                    <div class="info-icon">
+                        i
+                    </div>
 
-                    Your business structure and activity can
-                    affect which registrations, licences and
-                    compliance requirements may apply.
+                    <div>
+
+                        <strong>
+                            Why do we need this information?
+                        </strong>
+
+                        <br>
+
+                        Your business structure and primary
+                        activity help CHAPERON determine which
+                        registrations, licences, NOCs and
+                        compliance requirements may apply.
+
+                    </div>
 
                 </div>
 
 
+
+                <!-- ======================================
+                     ACTIONS
+                     ====================================== -->
+
                 <div class="actions">
 
-                    <a class="cancel-btn"
-                       href="<%= request.getContextPath() %>/entrepreneur/dashboard">
 
-                        Save & Exit Later
+                    <a
+                        class="cancel-btn"
+                        href="<%= ctx %>/entrepreneur/dashboard">
+
+                        ← Cancel & Return
 
                     </a>
 
 
-                    <button type="submit"
-                            class="continue-btn">
+                    <button
+                        type="submit"
+                        class="continue-btn">
 
-                        Save & Continue →
+                        Save & Continue
+
+                        <span class="arrow">
+                            →
+                        </span>
 
                     </button>
 
+
                 </div>
+
 
             </form>
 
+
+
+            <div class="save-note">
+
+                <span class="save-dot"></span>
+
+                Your information will be saved securely
+                as you complete each step.
+
+            </div>
+
+
         </div>
 
+    </section>
 
-        <div class="save-note">
-
-            Your progress will be stored in CHAPERON
-            as you complete each step.
-
-        </div>
-
-    </div>
 
 </div>
 
-</body>
+</main>
 
+
+</body>
 </html>

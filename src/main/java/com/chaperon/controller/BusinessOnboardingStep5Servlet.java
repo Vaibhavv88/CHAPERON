@@ -150,10 +150,46 @@ public class BusinessOnboardingStep5Servlet
                         "pollutionCategory"
                 );
 
+        String handlesPersonalData =
+                request.getParameter(
+                        "handlesPersonalData"
+                );
+
+        String seeksStpiBenefits =
+                request.getParameter(
+                        "seeksStpiBenefits"
+                );
+
+        String locatedInSez =
+                request.getParameter(
+                        "locatedInSez"
+                );
+
+        String certInApplicable =
+                request.getParameter(
+                        "certInApplicable"
+                );
+
+        String seeksTrademarkProtection =
+                request.getParameter(
+                        "seeksTrademarkProtection"
+                );
+
+        String seeksSoftwareCopyright =
+                request.getParameter(
+                        "seeksSoftwareCopyright"
+                );
+
         if (hazardous == null ||
             boiler == null ||
             waste == null ||
             groundwater == null ||
+            handlesPersonalData == null ||
+            seeksStpiBenefits == null ||
+            locatedInSez == null ||
+            certInApplicable == null ||
+            seeksTrademarkProtection == null ||
+            seeksSoftwareCopyright == null ||
             pollutionCategory == null ||
             pollutionCategory.isBlank()) {
 
@@ -209,6 +245,30 @@ public class BusinessOnboardingStep5Servlet
 
             business.setPollutionCategory(
                     pollutionCategory.trim()
+            );
+
+            business.setHandlesPersonalData(
+                    isYes(handlesPersonalData)
+            );
+
+            business.setSeeksStpiBenefits(
+                    isYes(seeksStpiBenefits)
+            );
+
+            business.setLocatedInSez(
+                    isYes(locatedInSez)
+            );
+
+            business.setCertInApplicable(
+                    isYes(certInApplicable)
+            );
+
+            business.setSeeksTrademarkProtection(
+                    isYes(seeksTrademarkProtection)
+            );
+
+            business.setSeeksSoftwareCopyright(
+                    isYes(seeksSoftwareCopyright)
             );
 
             boolean businessUpdated =
@@ -284,5 +344,12 @@ public class BusinessOnboardingStep5Servlet
 
             doGet(request, response);
         }
+    }
+
+    private boolean isYes(String value) {
+
+        return "YES".equalsIgnoreCase(value) ||
+               "TRUE".equalsIgnoreCase(value) ||
+               "ON".equalsIgnoreCase(value);
     }
 }

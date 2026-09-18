@@ -1,16 +1,11 @@
-<%@ page language="java"
-         contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8" %>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.sql.Timestamp" %>
 
 <%!
     private String esc(Object value) {
-
         if (value == null) {
             return "";
         }
-
         return String.valueOf(value)
                 .replace("&", "&amp;")
                 .replace("<", "&lt;")
@@ -21,1039 +16,386 @@
 %>
 
 <%
-    String userName =
-            (String) session.getAttribute("userName");
-
+    String userName = (String) session.getAttribute("userName");
     if (userName == null || userName.isBlank()) {
         userName = "Entrepreneur";
     }
+    String avatarLetter = userName.substring(0, 1).toUpperCase();
 
+    String profileFullName = (String) request.getAttribute("profileFullName");
+    String profileEmail = (String) request.getAttribute("profileEmail");
+    String profileMobile = (String) request.getAttribute("profileMobile");
+    String profileRole = (String) request.getAttribute("profileRole");
+    Timestamp profileCreatedAt = (Timestamp) request.getAttribute("profileCreatedAt");
+    Timestamp profileLastLogin = (Timestamp) request.getAttribute("profileLastLogin");
+    Boolean profileCompleted = (Boolean) request.getAttribute("profileCompleted");
 
-    String profileFullName =
-            (String) request.getAttribute("profileFullName");
+    String success = request.getParameter("success");
+    String message = request.getParameter("message");
 
-    String profileEmail =
-            (String) request.getAttribute("profileEmail");
-
-    String profileMobile =
-            (String) request.getAttribute("profileMobile");
-
-    String profileRole =
-            (String) request.getAttribute("profileRole");
-
-    Timestamp profileCreatedAt =
-            (Timestamp) request.getAttribute("profileCreatedAt");
-
-    Timestamp profileLastLogin =
-            (Timestamp) request.getAttribute("profileLastLogin");
-
-    Boolean profileCompleted =
-            (Boolean) request.getAttribute("profileCompleted");
-
-
-    String success =
-            request.getParameter("success");
-
-    String message =
-            request.getParameter("message");
-
-
-    if (profileFullName == null) {
-        profileFullName = userName;
-    }
-
-    if (profileEmail == null) {
-        profileEmail = "";
-    }
-
-    if (profileMobile == null) {
-        profileMobile = "";
-    }
-
-    if (profileRole == null) {
-        profileRole = "ENTREPRENEUR";
-    }
-
-    if (profileCompleted == null) {
-        profileCompleted = false;
-    }
+    if (profileFullName == null) profileFullName = userName;
+    if (profileEmail == null) profileEmail = "";
+    if (profileMobile == null) profileMobile = "";
+    if (profileRole == null) profileRole = "ENTREPRENEUR";
+    if (profileCompleted == null) profileCompleted = false;
+    
+    String profileAvatarLetter = profileFullName.length() > 0 ? profileFullName.substring(0, 1).toUpperCase() : "U";
+    String ctx = request.getContextPath();
 %>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<title>My Profile | CHAPERON</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f4f7fb;
-    color: #17233c;
-}
-
-.layout {
-    display: flex;
-    min-height: 100vh;
-}
-
-
-/* ==============================
-   SIDEBAR
-   ============================== */
-
-.sidebar {
-    width: 260px;
-    background: #10233f;
-    color: white;
-    padding: 24px 18px;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    overflow-y: auto;
-}
-
-.logo {
-    font-size: 25px;
-    font-weight: 900;
-    margin-bottom: 6px;
-}
-
-.tagline {
-    color: #b7c4d6;
-    font-size: 11px;
-    line-height: 1.5;
-    margin-bottom: 25px;
-}
-
-.user-box {
-    background: rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 24px;
-}
-
-.user-small {
-    color: #aebed2;
-    font-size: 11px;
-    margin-bottom: 5px;
-}
-
-.user-name {
-    font-size: 14px;
-    font-weight: 800;
-}
-
-.menu {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.menu-heading {
-    color: #8296b1;
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    margin: 15px 10px 7px;
-}
-
-.menu-item {
-    text-decoration: none;
-    color: #d6e0ec;
-    padding: 12px 13px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 700;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.menu-item:hover {
-    background: rgba(255,255,255,0.08);
-    color: white;
-}
-
-.menu-item.active {
-    background: #1677e8;
-    color: white;
-}
-
-.menu-icon {
-    width: 20px;
-    text-align: center;
-}
-
-.separator {
-    height: 1px;
-    background: rgba(255,255,255,0.12);
-    margin: 12px 0;
-}
-
-
-/* ==============================
-   MAIN
-   ============================== */
-
-.main {
-    margin-left: 260px;
-    width: calc(100% - 260px);
-}
-
-.topbar {
-    height: 70px;
-    background: white;
-    border-bottom: 1px solid #e5eaf1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 35px;
-}
-
-.topbar-title {
-    font-size: 18px;
-    font-weight: 900;
-}
-
-.topbar-user {
-    color: #64748b;
-    font-size: 13px;
-}
-
-.content {
-    padding: 35px;
-    max-width: 1250px;
-    margin: auto;
-}
-
-
-/* ==============================
-   HERO
-   ============================== */
-
-.hero {
-    background: white;
-    border: 1px solid #e4eaf1;
-    border-radius: 20px;
-    padding: 28px;
-    margin-bottom: 22px;
-    box-shadow: 0 10px 30px rgba(24,50,84,0.05);
-}
-
-.hero h1 {
-    margin: 0 0 8px;
-    font-size: 30px;
-}
-
-.hero p {
-    margin: 0;
-    color: #68778a;
-    line-height: 1.6;
-}
-
-
-/* ==============================
-   ALERTS
-   ============================== */
-
-.alert {
-    border-radius: 12px;
-    padding: 15px 18px;
-    margin-bottom: 20px;
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-.alert-success {
-    background: #e8f7ed;
-    border: 1px solid #ccebd6;
-    color: #267a42;
-}
-
-.alert-error {
-    background: #fff0ee;
-    border: 1px solid #efceca;
-    color: #b8342a;
-}
-
-
-/* ==============================
-   PROFILE SUMMARY
-   ============================== */
-
-.profile-header {
-    background: white;
-    border: 1px solid #e4eaf1;
-    border-radius: 18px;
-    padding: 25px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 22px;
-}
-
-.avatar {
-    width: 75px;
-    height: 75px;
-    border-radius: 50%;
-    background: #e9f3ff;
-    color: #1677e8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-    font-weight: 900;
-}
-
-.profile-name {
-    font-size: 22px;
-    font-weight: 900;
-    margin-bottom: 5px;
-}
-
-.profile-email {
-    color: #6f7d90;
-    font-size: 14px;
-    margin-bottom: 8px;
-}
-
-.role-badge {
-    display: inline-block;
-    background: #e8f2ff;
-    color: #1768c7;
-    padding: 6px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 900;
-}
-
-
-/* ==============================
-   GRID
-   ============================== */
-
-.grid {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 20px;
-}
-
-.card {
-    background: white;
-    border: 1px solid #e4eaf1;
-    border-radius: 18px;
-    padding: 25px;
-}
-
-.card h2 {
-    margin: 0 0 6px;
-    font-size: 20px;
-}
-
-.card-subtitle {
-    color: #748196;
-    font-size: 13px;
-    line-height: 1.6;
-    margin-bottom: 22px;
-}
-
-
-/* ==============================
-   FORM
-   ============================== */
-
-.form-group {
-    margin-bottom: 19px;
-}
-
-.form-label {
-    display: block;
-    font-size: 13px;
-    font-weight: 800;
-    margin-bottom: 8px;
-}
-
-.form-control {
-    width: 100%;
-    padding: 13px 14px;
-    border: 1px solid #d6dee8;
-    border-radius: 10px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    outline: none;
-    background: white;
-}
-
-.form-control:focus {
-    border-color: #1677e8;
-}
-
-.form-control[readonly] {
-    background: #f5f7fa;
-    color: #6d7989;
-    cursor: not-allowed;
-}
-
-.helper {
-    color: #8995a5;
-    font-size: 11px;
-    margin-top: 6px;
-    line-height: 1.5;
-}
-
-.primary-btn {
-    border: none;
-    background: #1677e8;
-    color: white;
-    padding: 13px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 800;
-    cursor: pointer;
-}
-
-.primary-btn:hover {
-    background: #0f67c8;
-}
-
-
-/* ==============================
-   ACCOUNT INFO
-   ============================== */
-
-.info-row {
-    padding: 15px 0;
-    border-bottom: 1px solid #edf1f5;
-}
-
-.info-row:last-child {
-    border-bottom: none;
-}
-
-.info-label {
-    color: #7b8797;
-    font-size: 11px;
-    font-weight: 900;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-}
-
-.info-value {
-    color: #26374d;
-    font-size: 14px;
-    font-weight: 800;
-    word-break: break-word;
-}
-
-.complete {
-    color: #267a42;
-}
-
-.incomplete {
-    color: #a96c00;
-}
-
-.security-note {
-    margin-top: 20px;
-    background: #f5f9ff;
-    border: 1px solid #dae9fb;
-    padding: 15px;
-    border-radius: 12px;
-    color: #506d8d;
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-
-/* ==============================
-   RESPONSIVE
-   ============================== */
-
-@media(max-width: 900px) {
-
-    .grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media(max-width: 750px) {
-
-    .layout {
-        display: block;
-    }
-
-    .sidebar {
-        width: 100%;
-        position: static;
-    }
-
-    .main {
-        margin-left: 0;
-        width: 100%;
-    }
-
-    .content {
-        padding: 20px;
-    }
-
-    .topbar {
-        padding: 0 20px;
-    }
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | CHAPERON</title>
+    <link rel="stylesheet" href="<%= ctx %>/assets/css/entrepreneur-enhancements.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --blue: #0962e8; --blue-dark: #0646b5; --cyan: #27b5ed;
+            --navy: #102446; --text: #263954; --muted: #7b8ca5;
+            --green: #149a61; --orange: #e58b29; --red: #d94c4c;
+            --bg: #f2f6fc;
+            --shadow: 0 10px 30px rgba(35, 66, 111, 0.07);
+            --shadow-hover: 0 16px 38px rgba(35, 66, 111, 0.12);
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            color: var(--text);
+            background: radial-gradient(circle at 90% 4%, rgba(39, 181, 237, 0.08), transparent 22%), var(--bg);
+            font-size: 15px;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        .app-shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 238px minmax(0, 1fr);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: sticky; top: 0; height: 100vh; padding: 26px 20px;
+            display: flex; flex-direction: column;
+            border-right: 1px solid #dce7f4;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(16px);
+            box-shadow: 8px 0 32px rgba(32, 74, 123, 0.055);
+        }
+        .sidebar-brand { width: 100%; min-width: 0; margin-bottom: 34px; padding: 0 4px; display: flex; align-items: center; gap: 11px; }
+        .logo-wrap { width: 47px; height: 47px; min-width: 47px; overflow: hidden; border-radius: 10px; background: white; box-shadow: 0 4px 12px rgba(16, 36, 70, 0.08); }
+        .logo-wrap img { width: 100%; height: 100%; object-fit: contain; }
+        .brand-title { color: #1053c4; font-size: 21px; font-weight: 900; line-height: 1; white-space: nowrap; }
+        .brand-subtitle { margin-top: 4px; color: #667c9c; font-size: 7px; font-weight: 800; line-height: 1.25; letter-spacing: 0.1px; }
+        
+        .nav-label { margin: 0 10px 10px; color: #9aa8ba; font-size: 10px; font-weight: 900; letter-spacing: 1.2px; }
+        .nav-list { display: flex; flex-direction: column; gap: 7px; }
+        .nav-item { min-height: 45px; padding: 0 14px; display: flex; align-items: center; gap: 12px; border-radius: 11px; color: #526783; font-size: 13px; font-weight: 700; transition: all 0.2s ease; }
+        .nav-item svg { width: 19px; height: 19px; min-width: 19px; }
+        .nav-item:hover { color: var(--blue); background: #edf5ff; transform: translateX(3px); }
+        .nav-item.active { color: white; background: linear-gradient(135deg, #0962e8, #268de9); box-shadow: 0 9px 20px rgba(9, 98, 232, 0.25); }
+        
+        .sidebar-spacer { flex: 1; }
+        .sidebar-profile { margin-top: 19px; padding: 14px; border: 1px solid #dce7f4; border-radius: 14px; background: linear-gradient(145deg, #ffffff, #f6f9fd); }
+        .sidebar-user { display: flex; align-items: center; gap: 10px; }
+        .sidebar-avatar { width: 40px; height: 40px; min-width: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: white; background: linear-gradient(135deg, #0962e9, #68a2ff); font-size: 14px; font-weight: 900; }
+        .sidebar-user strong { display: block; max-width: 120px; overflow: hidden; color: #1e3558; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; }
+        .sidebar-user span { display: block; margin-top: 2px; color: #8998ac; font-size: 11px; }
+        .sidebar-bottom-links { margin-top: 11px; padding-top: 10px; display: flex; justify-content: space-between; border-top: 1px solid #e8eef6; }
+        .sidebar-bottom-links a { color: #6b7e98; font-size: 11px; font-weight: 800; }
+        .sidebar-bottom-links a:hover { color: var(--blue); }
+        .sidebar-bottom-links .logout-link { color: #c24949; }
+
+        /* MAIN CONTENT */
+        .main { min-width: 0; padding: 32px; background: radial-gradient(circle at 90% 0, #dcefff 0, transparent 29%), #f3f7fd; }
+        
+        .topbar { margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .topbar-title h1 { color: #152b4d; font-size: 26px; font-weight: 850; }
+        .topbar-title p { margin-top: 4px; color: #8796aa; font-size: 13px; }
+        .top-profile { min-height: 42px; padding: 0 16px; display: flex; align-items: center; gap: 8px; border: 1px solid #dce7f5; border-radius: 50px; background: white; color: #425d7e; font-size: 13px; font-weight: 800; box-shadow: 0 6px 18px rgba(26, 72, 122, 0.05); }
+
+        /* ALERTS */
+        .notice { margin-bottom: 22px; padding: 14px 18px; border-radius: 12px; font-size: 14px; font-weight: 600; line-height: 1.5; display: flex; align-items: center; gap: 10px; }
+        .notice-success { color: #08794d; background: #e8f8f0; border: 1px solid #c9eedc; }
+        .notice-error { color: #b72f2f; background: #fff0f0; border: 1px solid #ffd1d1; }
+
+        /* HERO */
+        .hero { position: relative; overflow: hidden; padding: 32px 34px; margin-bottom: 22px; border: 1px solid #cfe1f5; border-radius: 20px; background: linear-gradient(125deg, #075ecb, #1688ef 65%, #35a9ef); box-shadow: 0 11px 31px rgba(27, 65, 107, 0.1); color: white; }
+        .hero h2 { margin: 0 0 8px; font-size: 28px; font-weight: 900; }
+        .hero p { max-width: 720px; margin: 0; font-size: 14px; line-height: 1.5; color: #eaf5ff; }
+
+        /* PROFILE HEADER */
+        .profile-header { background: white; border: 1px solid #dfe8f4; border-radius: 18px; padding: 24px; display: flex; align-items: center; gap: 24px; margin-bottom: 24px; box-shadow: var(--shadow); }
+        .avatar-lg { width: 80px; height: 80px; flex: none; border-radius: 50%; background: linear-gradient(135deg, #0962e8, #27b5ed); color: white; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; box-shadow: 0 8px 20px rgba(9, 98, 232, 0.2); }
+        .profile-name { font-size: 24px; font-weight: 900; color: #102446; margin-bottom: 4px; }
+        .profile-email { color: #6b7e98; font-size: 14px; margin-bottom: 10px; font-weight: 600; }
+        .role-badge { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 6px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; background: #eef4fc; color: #0962e8; }
+
+        /* LAYOUT GRID */
+        .content-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 22px; align-items: start; }
+        
+        .section-card { background: white; border: 1px solid #dfe8f4; border-radius: 18px; padding: 24px; box-shadow: var(--shadow); }
+        .section-header-wrap { margin-bottom: 22px; border-bottom: 1px solid #edf2f9; padding-bottom: 15px; }
+        .section-header-wrap h3 { font-size: 19px; font-weight: 850; color: #152b4d; margin-bottom: 4px; }
+        .section-header-wrap p { color: #728096; font-size: 13px; margin: 0; line-height: 1.5; }
+
+        /* FORM */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 13px; font-weight: 800; color: #263954; margin-bottom: 8px; }
+        .form-control { width: 100%; min-height: 46px; padding: 10px 14px; border: 1px solid #cfdced; border-radius: 10px; background: #fff; font-family: inherit; font-size: 14px; color: #102446; outline: none; transition: 0.2s; }
+        .form-control:focus { border-color: #0962e8; box-shadow: 0 0 0 4px rgba(9, 98, 232, 0.1); }
+        .form-control[readonly] { background: #f0f3f7; color: #6b7e98; border-color: #e2eaf5; cursor: not-allowed; }
+        .helper { color: #8394ab; font-size: 11px; margin-top: 6px; line-height: 1.4; font-weight: 600; }
+        
+        .primary-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 24px; border: 0; border-radius: 10px; color: white; background: linear-gradient(135deg, #0962e8, #0750c5); font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 18px rgba(9, 98, 232, 0.2); transition: 0.2s; }
+        .primary-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(9, 98, 232, 0.25); }
+
+        /* INFO ROWS */
+        .info-list { display: grid; gap: 12px; }
+        .info-row { display: flex; flex-direction: column; gap: 4px; padding: 14px; border: 1px solid #eaf0f8; border-radius: 10px; background: #f8fbfe; }
+        .info-label { font-size: 10px; color: #8394ab; font-weight: 850; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-value { font-size: 14px; font-weight: 750; color: #243c5d; line-height: 1.4; word-break: break-word; }
+        
+        .status-complete { color: #11784c; display: flex; align-items: center; gap: 6px; }
+        .status-pending { color: #ba711c; display: flex; align-items: center; gap: 6px; }
+
+        .security-note { margin-top: 20px; padding: 16px; border-radius: 12px; background: #fef9f2; border: 1px solid #fbe5cc; color: #a36300; font-size: 12px; line-height: 1.6; font-weight: 600; }
+        .security-note strong { color: #8c5300; display: block; margin-bottom: 4px; font-size: 13px; }
+
+        @media (max-width: 1050px) {
+            .content-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 850px) {
+            .app-shell { grid-template-columns: 75px minmax(0, 1fr); }
+            .sidebar { padding: 20px 10px; width: 75px; }
+            .sidebar-brand { padding: 0; justify-content: center; }
+            .sidebar-brand > div:last-child, .nav-label, .nav-item span, .sidebar-profile { display: none; }
+            .nav-item { width: 45px; margin: auto; padding: 0; justify-content: center; }
+            .main { padding: 20px; }
+        }
+        @media (max-width: 600px) {
+            .app-shell { display: block; }
+            .sidebar { position: static; width: 100%; height: auto; padding: 10px 12px; flex-direction: row; align-items: center; overflow-x: auto; }
+            .sidebar-brand { margin: 0 15px 0 0; width: auto; }
+            .nav-list { flex-direction: row; gap: 5px; }
+            .sidebar-spacer { display: none; }
+            .profile-header { flex-direction: column; text-align: center; gap: 15px; }
+            .primary-btn { width: 100%; }
+        }
+    </style>
 </head>
-
-
 <body>
 
-<div class="layout">
+<div class="app-shell">
 
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a href="<%= ctx %>/entrepreneur/dashboard" class="sidebar-brand">
+            <div class="logo-wrap">
+                <img src="<%= ctx %>/images/chaperon-logo.jpeg" alt="CHAPERON Logo">
+            </div>
+            <div>
+                <div class="brand-title">CHAPERON</div>
+                <div class="brand-subtitle">GUIDE. CONNECT. COMPLY. GET APPROVED.</div>
+            </div>
+        </a>
 
-<!-- ======================================
-     SIDEBAR
-     ====================================== -->
+        <div class="nav-label">WORKSPACE</div>
 
-<aside class="sidebar">
+        <nav class="nav-list">
+            <a href="<%= ctx %>/entrepreneur/dashboard" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M3 11L12 4L21 11V21H15V15H9V21H3V11Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="<%= ctx %>/entrepreneur/business-onboarding" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M4 21V8L12 3L20 8V21" stroke="currentColor" stroke-width="2"/><path d="M9 21V14H15V21" stroke="currentColor" stroke-width="2"/></svg>
+                <span>My Business</span>
+            </a>
+            <a href="<%= ctx %>/entrepreneur/generate-approvals" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="6" r="2" stroke="currentColor" stroke-width="2"/><circle cx="19" cy="18" r="2" stroke="currentColor" stroke-width="2"/><path d="M7 6H16C18 6 19 8 19 10V11M17 18H8C6 18 5 16 5 14V13" stroke="currentColor" stroke-width="2"/></svg>
+                <span>Approval Journey</span>
+            </a>
+            <a href="<%= ctx %>/entrepreneur/documents" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M6 2H14L19 7V22H6Z" stroke="currentColor" stroke-width="2"/><path d="M14 2V7H19" stroke="currentColor" stroke-width="2"/></svg>
+                <span>Documents</span>
+            </a>
+            <a href="<%= ctx %>/entrepreneur/my-applications" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="2"/></svg>
+                <span>Applications</span>
+            </a>
+            <a href="<%= ctx %>/entrepreneur/inspections" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 3V7M16 3V7M3 10H21" stroke="currentColor" stroke-width="2"/></svg>
+                <span>Inspections</span>
+            </a>
+            <a href="<%= ctx %>/entrepreneur/schemes" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 3L20 7L12 11L4 7L12 3Z" stroke="currentColor" stroke-width="2"/><path d="M5 10V16L12 20L19 16V10" stroke="currentColor" stroke-width="2"/></svg>
+                <span>Schemes</span>
+            </a>
+            <a href="<%= ctx %>/entrepreneur/compliance" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 3L20 6V11C20 16 17 20 12 22C7 20 4 16 4 11V6L12 3Z" stroke="currentColor" stroke-width="2"/><path d="M8.5 12L11 14.5L16 9.5" stroke="currentColor" stroke-width="2"/></svg>
+                <span>Compliance</span>
+            </a>
+            <a href="<%= ctx %>/entrepreneur/notifications" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8C6 15 3 16 3 16H21C21 16 18 15 18 8Z" stroke="currentColor" stroke-width="2"/><path d="M10 20H14" stroke="currentColor" stroke-width="2"/></svg>
+                <span>Notifications</span>
+            </a>
+            <!-- Profile (ACTIVE) -->
+            <a href="<%= ctx %>/entrepreneur/profile" class="nav-item active">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span>Profile</span>
+            </a>
+        </nav>
 
-    <div class="logo">
-        CHAPERON
-    </div>
+        <div class="sidebar-spacer"></div>
 
-    <div class="tagline">
-        FROM BUSINESS IDEA TO APPROVAL —
-        <br>
-        ONE INTELLIGENT JOURNEY
-    </div>
-
-
-    <div class="user-box">
-
-        <div class="user-small">
-            Logged in as
+        <div class="sidebar-profile">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar"><%= avatarLetter %></div>
+                <div>
+                    <strong><%= esc(userName) %></strong>
+                    <span>Entrepreneur</span>
+                </div>
+            </div>
+            <div class="sidebar-bottom-links">
+                <a href="<%= ctx %>/entrepreneur/profile">Profile</a>
+                <a href="<%= ctx %>/logout" class="logout-link">Logout</a>
+            </div>
         </div>
-
-        <div class="user-name">
-            <%= esc(userName) %>
-        </div>
-
-    </div>
-
-
-    <nav class="menu">
-
-        <div class="menu-heading">
-            YOUR JOURNEY
-        </div>
-
-
-        <a class="menu-item"
-           href="<%= request.getContextPath() %>/entrepreneur/dashboard">
-
-            <span class="menu-icon">⌂</span>
-            Home
-
-        </a>
-
-
-        <a class="menu-item"
-           href="<%= request.getContextPath() %>/entrepreneur/business-onboarding">
-
-            <span class="menu-icon">▣</span>
-            My Business
-
-        </a>
-
-
-        <a class="menu-item"
-           href="<%= request.getContextPath() %>/entrepreneur/generate-approvals">
-
-            <span class="menu-icon">✓</span>
-            My Approval Journey
-
-        </a>
-
-
-        <a class="menu-item"
-           href="<%= request.getContextPath() %>/entrepreneur/documents">
-
-            <span class="menu-icon">▤</span>
-            Documents
-
-        </a>
-
-
-        <a class="menu-item"
-           href="<%= request.getContextPath() %>/entrepreneur/my-applications">
-
-            <span class="menu-icon">▦</span>
-            Applications
-
-        </a>
-
-
-        <a class="menu-item"
-           href="<%= request.getContextPath() %>/entrepreneur/inspections">
-
-            <span class="menu-icon">⌕</span>
-            Inspections
-
-        </a>
-
-
-        <div class="menu-heading">
-            SUPPORT & COMPLIANCE
-        </div>
-
-
-        <a class="menu-item"
-           href="<%= request.getContextPath() %>/entrepreneur/schemes">
-
-            <span class="menu-icon">★</span>
-            Government Schemes
-
-        </a>
-
-
-        <a class="menu-item"
-           href="<%= request.getContextPath() %>/entrepreneur/compliance">
-
-            <span class="menu-icon">⚙</span>
-            Compliance
-
-        </a>
-
-
-        <a class="menu-item"
-           href="<%= request.getContextPath() %>/entrepreneur/notifications">
-
-            <span class="menu-icon">●</span>
-            Notifications
-
-        </a>
-
-
-        <a class="menu-item"
-           href="javascript:void(0)"
-           onclick="alert('Help module will be connected in Step 15B.')">
-
-            <span class="menu-icon">?</span>
-            Help
-
-        </a>
-
-
-        <div class="menu-heading">
-            ACCOUNT
-        </div>
-
-
-        <a class="menu-item active"
-           href="<%= request.getContextPath() %>/entrepreneur/profile">
-
-            <span class="menu-icon">♟</span>
-            Profile
-
-        </a>
-
-
-        <div class="separator"></div>
-
-
-        <a class="menu-item"
-           href="<%= request.getContextPath() %>/logout">
-
-            <span class="menu-icon">↪</span>
-            Logout
-
-        </a>
-
-    </nav>
-
-</aside>
-
-
-
-<!-- ======================================
-     MAIN
-     ====================================== -->
-
-<main class="main">
-
-
-    <div class="topbar">
-
-        <div class="topbar-title">
-            My Profile
-        </div>
-
-        <div class="topbar-user">
-            <%= esc(userName) %>
-        </div>
-
-    </div>
-
-
-    <div class="content">
-
-
-        <%
-        if ("profile-updated".equals(success)) {
-        %>
-
-        <div class="alert alert-success">
-            Profile updated successfully.
-        </div>
-
-        <%
-        }
-        %>
-
-
-        <%
-        if (message != null &&
-            !message.isBlank()) {
-        %>
-
-        <div class="alert alert-error">
-            <%= esc(message) %>
-        </div>
-
-        <%
-        }
-        %>
-
-
-
-        <!-- HERO -->
-
-        <div class="hero">
-
-            <h1>
-                My Profile
-            </h1>
-
-            <p>
-                Manage your personal account information
-                used across your CHAPERON approval journey.
-            </p>
-
-        </div>
-
-
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <header class="topbar">
+            <div class="topbar-title">
+                <h1>Account Settings</h1>
+                <p>Manage your personal profile and account security preferences.</p>
+            </div>
+            <div class="top-actions">
+                <div class="top-profile">
+                    <%= avatarLetter %>&nbsp;<%= esc(userName) %>
+                </div>
+            </div>
+        </header>
+
+        <!-- ALERTS -->
+        <% if ("profile-updated".equals(success)) { %>
+            <div class="notice notice-success">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Profile updated successfully.
+            </div>
+        <% } %>
+
+        <% if (message != null && !message.isBlank()) { %>
+            <div class="notice notice-error">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <%= esc(message) %>
+            </div>
+        <% } %>
+
+        <!-- HERO SECTION -->
+        <section class="hero">
+            <h2>My Profile</h2>
+            <p>Manage the primary contact information associated with your CHAPERON regulatory journey. Keep these details updated to receive critical application and compliance alerts.</p>
+        </section>
 
         <!-- PROFILE HEADER -->
-
-        <div class="profile-header">
-
-            <div class="avatar">
-
-                <%
-                if (profileFullName != null &&
-                    !profileFullName.isBlank()) {
-                %>
-
-                    <%= esc(
-                            profileFullName
-                            .substring(0, 1)
-                            .toUpperCase()
-                    ) %>
-
-                <%
-                } else {
-                %>
-
-                    U
-
-                <%
-                }
-                %>
-
+        <section class="profile-header">
+            <div class="avatar-lg">
+                <%= profileAvatarLetter %>
             </div>
-
-
             <div>
-
-                <div class="profile-name">
-                    <%= esc(profileFullName) %>
-                </div>
-
-                <div class="profile-email">
-                    <%= esc(profileEmail) %>
-                </div>
-
-                <span class="role-badge">
-                    <%= esc(profileRole) %>
-                </span>
-
+                <div class="profile-name"><%= esc(profileFullName) %></div>
+                <div class="profile-email"><%= esc(profileEmail) %></div>
+                <span class="role-badge"><%= esc(profileRole) %></span>
             </div>
+        </section>
 
-        </div>
+        <div class="content-grid">
 
-
-
-        <div class="grid">
-
-
-            <!-- ==========================
-                 EDIT PROFILE
-                 ========================== -->
-
-            <div class="card">
-
-                <h2>
-                    Personal Information
-                </h2>
-
-                <div class="card-subtitle">
-
-                    You can update your name and
-                    mobile number here.
-
-                    Your registered email is kept
-                    read-only for account security.
-
+            <!-- EDIT PROFILE FORM -->
+            <section class="section-card">
+                <div class="section-header-wrap">
+                    <h3>Personal Information</h3>
+                    <p>Update your contact details below.</p>
                 </div>
 
-
-                <form method="post"
-                      action="<%= request.getContextPath() %>/entrepreneur/profile">
-
-
+                <form method="post" action="<%= ctx %>/entrepreneur/profile">
+                    
                     <div class="form-group">
-
-                        <label class="form-label">
-                            Full Name *
-                        </label>
-
-                        <input type="text"
-                               name="fullName"
-                               class="form-control"
-                               minlength="2"
-                               maxlength="150"
-                               value="<%= esc(profileFullName) %>"
-                               required>
-
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" name="fullName" class="form-control" minlength="2" maxlength="150" value="<%= esc(profileFullName) %>" required>
                     </div>
 
-
-
                     <div class="form-group">
-
-                        <label class="form-label">
-                            Email Address
-                        </label>
-
-                        <input type="email"
-                               class="form-control"
-                               value="<%= esc(profileEmail) %>"
-                               readonly>
-
-                        <div class="helper">
-
-                            Your login email cannot be
-                            changed from this page.
-
-                        </div>
-
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" value="<%= esc(profileEmail) %>" readonly>
+                        <div class="helper">Your registered email acts as your primary ID and cannot be changed here for security reasons.</div>
                     </div>
 
-
-
                     <div class="form-group">
-
-                        <label class="form-label">
-                            Mobile Number *
-                        </label>
-
-                        <input type="text"
-                               name="mobile"
-                               class="form-control"
-                               maxlength="10"
-                               pattern="[6-9][0-9]{9}"
-                               value="<%= esc(profileMobile) %>"
-                               placeholder="10-digit mobile number"
-                               required>
-
-                        <div class="helper">
-
-                            Enter a valid 10-digit
-                            Indian mobile number.
-
-                        </div>
-
+                        <label class="form-label">Mobile Number *</label>
+                        <input type="text" name="mobile" class="form-control" maxlength="10" pattern="[6-9][0-9]{9}" value="<%= esc(profileMobile) %>" placeholder="10-digit mobile number" required>
+                        <div class="helper">Enter a valid 10-digit Indian mobile number for SMS notifications.</div>
                     </div>
 
-
-
-                    <button type="submit"
-                            class="primary-btn">
-
-                        Save Changes
-
-                    </button>
-
+                    <button type="submit" class="primary-btn">Save Changes</button>
                 </form>
+            </section>
 
-            </div>
-
-
-
-            <!-- ==========================
-                 ACCOUNT DETAILS
-                 ========================== -->
-
-            <div class="card">
-
-                <h2>
-                    Account Information
-                </h2>
-
-                <div class="card-subtitle">
-
-                    Basic account and profile
-                    status information.
-
+            <!-- ACCOUNT DETAILS -->
+            <aside class="section-card">
+                <div class="section-header-wrap">
+                    <h3>Account Status</h3>
+                    <p>Basic profile timeline.</p>
                 </div>
 
-
-
-                <div class="info-row">
-
-                    <div class="info-label">
-                        Account Role
+                <div class="info-list">
+                    <div class="info-row">
+                        <div class="info-label">Account Role</div>
+                        <div class="info-value"><%= esc(profileRole) %></div>
                     </div>
 
-                    <div class="info-value">
-                        <%= esc(profileRole) %>
+                    <div class="info-row">
+                        <div class="info-label">Business Profile Status</div>
+                        <% if (profileCompleted) { %>
+                            <div class="info-value status-complete">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                Completed
+                            </div>
+                        <% } else { %>
+                            <div class="info-value status-pending">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                Pending Setup
+                            </div>
+                        <% } %>
                     </div>
 
+                    <div class="info-row">
+                        <div class="info-label">Account Created</div>
+                        <div class="info-value"><%= profileCreatedAt != null ? esc(profileCreatedAt) : "Not Available" %></div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Last Login</div>
+                        <div class="info-value"><%= profileLastLogin != null ? esc(profileLastLogin) : "Just Now" %></div>
+                    </div>
                 </div>
-
-
-
-                <div class="info-row">
-
-                    <div class="info-label">
-                        Registered Email
-                    </div>
-
-                    <div class="info-value">
-                        <%= esc(profileEmail) %>
-                    </div>
-
-                </div>
-
-
-
-                <div class="info-row">
-
-                    <div class="info-label">
-                        Business Profile
-                    </div>
-
-
-                    <%
-                    if (profileCompleted) {
-                    %>
-
-                    <div class="info-value complete">
-                        ✓ Completed
-                    </div>
-
-                    <%
-                    } else {
-                    %>
-
-                    <div class="info-value incomplete">
-                        Pending
-                    </div>
-
-                    <%
-                    }
-                    %>
-
-                </div>
-
-
-
-                <div class="info-row">
-
-                    <div class="info-label">
-                        Account Created
-                    </div>
-
-                    <div class="info-value">
-
-                        <%= profileCreatedAt != null
-                                ? esc(profileCreatedAt)
-                                : "Not Available" %>
-
-                    </div>
-
-                </div>
-
-
-
-                <div class="info-row">
-
-                    <div class="info-label">
-                        Last Login
-                    </div>
-
-                    <div class="info-value">
-
-                        <%= profileLastLogin != null
-                                ? esc(profileLastLogin)
-                                : "Not Available" %>
-
-                    </div>
-
-                </div>
-
 
                 <div class="security-note">
-
                     <strong>Account Security</strong>
-
-                    <br><br>
-
-                    Never share your CHAPERON password
-                    or login credentials with anyone.
-
-                    Your business information and approval
-                    applications remain associated with
-                    this account.
-
+                    Never share your CHAPERON password with anyone. Your business data and legal applications are tied exclusively to this secure account.
                 </div>
-
-            </div>
-
+            </aside>
 
         </div>
 
-
-    </div>
-
-</main>
-
+    </main>
 </div>
 
 </body>
-
 </html>

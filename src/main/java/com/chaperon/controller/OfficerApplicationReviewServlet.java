@@ -67,12 +67,20 @@ public class OfficerApplicationReviewServlet
             "b.pin_code, " +
             "b.project_stage, " +
             "b.investment_amount, " +
+            "b.annual_turnover, " +
+            "b.interstate_supply, " +
             "b.employee_count, " +
             "b.pollution_category, " +
             "b.hazardous_material, " +
             "b.boiler_used, " +
             "b.industrial_waste, " +
             "b.groundwater_required, " +
+            "b.handles_personal_data, " +
+            "b.seeks_stpi_benefits, " +
+            "b.located_in_sez, " +
+            "b.cert_in_applicable, " +
+            "b.seeks_trademark_protection, " +
+            "b.seeks_software_copyright, " +
 
             "a.approval_name, " +
             "a.approval_code, " +
@@ -549,6 +557,16 @@ public class OfficerApplicationReviewServlet
                     );
 
                     request.setAttribute(
+                            "annualTurnover",
+                            rs.getObject("annual_turnover")
+                    );
+
+                    request.setAttribute(
+                            "interstateSupply",
+                            rs.getBoolean("interstate_supply")
+                    );
+
+                    request.setAttribute(
                             "employeeCount",
                             rs.getInt(
                                     "employee_count"
@@ -588,6 +606,36 @@ public class OfficerApplicationReviewServlet
                             rs.getBoolean(
                                     "groundwater_required"
                             )
+                    );
+
+                    request.setAttribute(
+                            "handlesPersonalData",
+                            rs.getBoolean("handles_personal_data")
+                    );
+
+                    request.setAttribute(
+                            "seeksStpiBenefits",
+                            rs.getBoolean("seeks_stpi_benefits")
+                    );
+
+                    request.setAttribute(
+                            "locatedInSez",
+                            rs.getBoolean("located_in_sez")
+                    );
+
+                    request.setAttribute(
+                            "certInApplicable",
+                            rs.getBoolean("cert_in_applicable")
+                    );
+
+                    request.setAttribute(
+                            "seeksTrademarkProtection",
+                            rs.getBoolean("seeks_trademark_protection")
+                    );
+
+                    request.setAttribute(
+                            "seeksSoftwareCopyright",
+                            rs.getBoolean("seeks_software_copyright")
                     );
 
 

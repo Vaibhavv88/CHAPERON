@@ -41,78 +41,136 @@ public class ApprovalRecommendationServiceImpl
             long userId
     ) throws SQLException {
 
+        /*
+         * =============================================
+         * LOAD CURRENT BUSINESS PROFILE
+         * =============================================
+         */
         Business business =
                 businessService.getBusinessByUserId(
                         userId
                 );
 
         if (business == null) {
+
             return new ArrayList<>();
         }
 
         long businessId =
                 business.getBusinessId();
 
+        /*
+         * =============================================
+         * IMPORTANT FIX
+         *
+         * Remove only old recommendations which were
+         * never started.
+         *
+         * Submitted / approved / rejected application
+         * history remains preserved.
+         * =============================================
+         */
+        businessApprovalDAO
+                .deleteNotStartedByBusinessId(
+                        businessId
+                );
+
+        /*
+         * =============================================
+         * LOAD ACTIVE RULES
+         * =============================================
+         */
         List<ApprovalRule> rules =
                 approvalDAO.findActiveRules();
 
+        if (rules == null ||
+            rules.isEmpty()) {
+
+            return businessApprovalDAO
+                    .findByBusinessId(
+                            businessId
+                    );
+        }
+
+        /*
+         * =============================================
+         * RE-CALCULATE CURRENT APPLICABLE APPROVALS
+         * =============================================
+         */
         for (ApprovalRule rule : rules) {
 
-            if (matches(
+            if (rule == null) {
+                continue;
+            }
+
+            if (!matches(
                     business,
                     rule
             )) {
 
-                if (!businessApprovalDAO.exists(
-                        businessId,
-                        rule.getApprovalId()
-                )) {
-
-                    BusinessApproval recommendation =
-                            new BusinessApproval();
-
-                    recommendation.setBusinessId(
-                            businessId
-                    );
-
-                    recommendation.setApprovalId(
-                            rule.getApprovalId()
-                    );
-
-                    recommendation.setRequirementStatus(
-                            "REQUIRED"
-                    );
-
-                    recommendation.setPriorityLevel(
-                            defaultText(
-                                    rule.getPriorityLevel(),
-                                    "MEDIUM"
-                            )
-                    );
-
-                    recommendation.setReasonText(
-                            defaultText(
-                                    rule.getReasonText(),
-                                    "Recommended based on your business profile."
-                            )
-                    );
-
-                    recommendation.setCurrentStatus(
-                            "NOT_STARTED"
-                    );
-
-                    recommendation.setMandatory(
-                            true
-                    );
-
-                    businessApprovalDAO
-                            .saveBusinessApproval(
-                                    recommendation
-                            );
-                }
+                continue;
             }
+
+            /*
+             * If an old submitted/approved/etc.
+             * record already exists, do not duplicate it.
+             */
+            if (businessApprovalDAO.exists(
+                    businessId,
+                    rule.getApprovalId()
+            )) {
+
+                continue;
+            }
+
+            BusinessApproval recommendation =
+                    new BusinessApproval();
+
+            recommendation.setBusinessId(
+                    businessId
+            );
+
+            recommendation.setApprovalId(
+                    rule.getApprovalId()
+            );
+
+            recommendation.setRequirementStatus(
+                    "REQUIRED"
+            );
+
+            recommendation.setPriorityLevel(
+                    defaultText(
+                            rule.getPriorityLevel(),
+                            "MEDIUM"
+                    )
+            );
+
+            recommendation.setReasonText(
+                    defaultText(
+                            rule.getReasonText(),
+                            "Recommended based on your current business profile."
+                    )
+            );
+
+            recommendation.setCurrentStatus(
+                    "NOT_STARTED"
+            );
+
+            recommendation.setMandatory(
+                    true
+            );
+
+            businessApprovalDAO
+                    .saveBusinessApproval(
+                            recommendation
+                    );
         }
 
+        /*
+         * =============================================
+         * RETURN REFRESHED ROADMAP
+         * =============================================
+         */
         return businessApprovalDAO
                 .findByBusinessId(
                         businessId
@@ -130,6 +188,7 @@ public class ApprovalRecommendationServiceImpl
                 );
 
         if (business == null) {
+
             return new ArrayList<>();
         }
 
@@ -139,6 +198,11 @@ public class ApprovalRecommendationServiceImpl
                 );
     }
 
+    /*
+     * =================================================
+     * RULE MATCHING ENGINE
+     * =================================================
+     */
     private boolean matches(
             Business business,
             ApprovalRule rule
@@ -151,6 +215,11 @@ public class ApprovalRecommendationServiceImpl
                 rule.getIndustry(),
                 business.getIndustry()
         )) {
+
+            return false;
+        }
+
+        if (!matchesText(rule.getBusinessConstitution(), business.getBusinessConstitution())) {
             return false;
         }
 
@@ -161,6 +230,7 @@ public class ApprovalRecommendationServiceImpl
                 rule.getBusinessActivity(),
                 business.getBusinessActivity()
         )) {
+
             return false;
         }
 
@@ -171,6 +241,7 @@ public class ApprovalRecommendationServiceImpl
                 rule.getProjectStage(),
                 business.getProjectStage()
         )) {
+
             return false;
         }
 
@@ -181,6 +252,7 @@ public class ApprovalRecommendationServiceImpl
                 rule.getState(),
                 business.getState()
         )) {
+
             return false;
         }
 
@@ -191,6 +263,7 @@ public class ApprovalRecommendationServiceImpl
                 rule.getPollutionCategory(),
                 business.getPollutionCategory()
         )) {
+
             return false;
         }
 
@@ -201,6 +274,7 @@ public class ApprovalRecommendationServiceImpl
                 business,
                 rule
         )) {
+
             return false;
         }
 
@@ -211,6 +285,21 @@ public class ApprovalRecommendationServiceImpl
                 business,
                 rule
         )) {
+
+            return false;
+        }
+
+        if (!matchesAnnualTurnover(business, rule)) {
+            return false;
+        }
+
+        if (!matchesBoolean(rule.getInterstateSupplyRequired(), business.isInterstateSupply())
+                || !matchesBoolean(rule.getHandlesPersonalDataRequired(), business.isHandlesPersonalData())
+                || !matchesBoolean(rule.getStpiBenefitsRequired(), business.isSeeksStpiBenefits())
+                || !matchesBoolean(rule.getSezUnitRequired(), business.isLocatedInSez())
+                || !matchesBoolean(rule.getCertInApplicabilityRequired(), business.isCertInApplicable())
+                || !matchesBoolean(rule.getTrademarkProtectionRequired(), business.isSeeksTrademarkProtection())
+                || !matchesBoolean(rule.getSoftwareCopyrightRequired(), business.isSeeksSoftwareCopyright())) {
             return false;
         }
 
@@ -221,6 +310,7 @@ public class ApprovalRecommendationServiceImpl
                 rule.getHazardousMaterialRequired(),
                 business.isHazardousMaterial()
         )) {
+
             return false;
         }
 
@@ -231,6 +321,7 @@ public class ApprovalRecommendationServiceImpl
                 rule.getBoilerRequired(),
                 business.isBoilerUsed()
         )) {
+
             return false;
         }
 
@@ -241,6 +332,7 @@ public class ApprovalRecommendationServiceImpl
                 rule.getIndustrialWasteRequired(),
                 business.isIndustrialWaste()
         )) {
+
             return false;
         }
 
@@ -251,21 +343,25 @@ public class ApprovalRecommendationServiceImpl
                 rule.getGroundwaterRequired(),
                 business.isGroundwaterRequired()
         )) {
+
             return false;
         }
 
         return true;
     }
 
+    /*
+     * =================================================
+     * TEXT CONDITION
+     *
+     * NULL rule value means condition is irrelevant.
+     * =================================================
+     */
     private boolean matchesText(
             String ruleValue,
             String businessValue
     ) {
 
-        /*
-         * NULL / blank in rule means:
-         * this condition does not matter.
-         */
         if (ruleValue == null ||
             ruleValue.isBlank()) {
 
@@ -285,6 +381,11 @@ public class ApprovalRecommendationServiceImpl
                 );
     }
 
+    /*
+     * =================================================
+     * EMPLOYEE CONDITION
+     * =================================================
+     */
     private boolean matchesEmployeeCount(
             Business business,
             ApprovalRule rule
@@ -314,6 +415,11 @@ public class ApprovalRecommendationServiceImpl
         return true;
     }
 
+    /*
+     * =================================================
+     * INVESTMENT CONDITION
+     * =================================================
+     */
     private boolean matchesInvestment(
             Business business,
             ApprovalRule rule
@@ -325,9 +431,6 @@ public class ApprovalRecommendationServiceImpl
         BigDecimal maximum =
                 rule.getMaximumInvestment();
 
-        /*
-         * No investment condition in rule.
-         */
         if (minimum == null &&
             maximum == null) {
 
@@ -338,17 +441,22 @@ public class ApprovalRecommendationServiceImpl
                 business.getInvestmentAmount();
 
         if (investment == null) {
+
             return false;
         }
 
         if (minimum != null &&
-            investment.compareTo(minimum) < 0) {
+            investment.compareTo(
+                    minimum
+            ) < 0) {
 
             return false;
         }
 
         if (maximum != null &&
-            investment.compareTo(maximum) > 0) {
+            investment.compareTo(
+                    maximum
+            ) > 0) {
 
             return false;
         }
@@ -356,21 +464,42 @@ public class ApprovalRecommendationServiceImpl
         return true;
     }
 
+    /*
+     * =================================================
+     * BOOLEAN CONDITION
+     *
+     * NULL means ignore the condition.
+     * =================================================
+     */
     private boolean matchesBoolean(
             Boolean ruleValue,
             boolean businessValue
     ) {
 
-        /*
-         * NULL means this condition
-         * should be ignored.
-         */
         if (ruleValue == null) {
+
             return true;
         }
 
         return ruleValue.booleanValue()
                 == businessValue;
+    }
+
+    private boolean matchesAnnualTurnover(Business business, ApprovalRule rule) {
+        BigDecimal minimum = rule.getMinimumAnnualTurnover();
+        BigDecimal maximum = rule.getMaximumAnnualTurnover();
+
+        if (minimum == null && maximum == null) {
+            return true;
+        }
+
+        BigDecimal annualTurnover = business.getAnnualTurnover();
+        if (annualTurnover == null) {
+            return false;
+        }
+
+        return (minimum == null || annualTurnover.compareTo(minimum) >= 0)
+                && (maximum == null || annualTurnover.compareTo(maximum) <= 0);
     }
 
     private String defaultText(

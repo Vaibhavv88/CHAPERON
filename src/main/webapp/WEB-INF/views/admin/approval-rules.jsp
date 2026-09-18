@@ -1165,6 +1165,9 @@ if ("required".equals(error)) {
                 String industry =
                         (String) rule.get("industry");
 
+                String businessConstitution =
+                        (String) rule.get("businessConstitution");
+
                 String businessActivity =
                         (String) rule.get("businessActivity");
 
@@ -1188,6 +1191,33 @@ if ("required".equals(error)) {
 
                 BigDecimal maximumInvestment =
                         (BigDecimal) rule.get("maximumInvestment");
+
+                BigDecimal minimumAnnualTurnover =
+                        (BigDecimal) rule.get("minimumAnnualTurnover");
+
+                BigDecimal maximumAnnualTurnover =
+                        (BigDecimal) rule.get("maximumAnnualTurnover");
+
+                Boolean interstateSupplyRequired =
+                        (Boolean) rule.get("interstateSupplyRequired");
+
+                Boolean handlesPersonalDataRequired =
+                        (Boolean) rule.get("handlesPersonalDataRequired");
+
+                Boolean stpiBenefitsRequired =
+                        (Boolean) rule.get("stpiBenefitsRequired");
+
+                Boolean sezUnitRequired =
+                        (Boolean) rule.get("sezUnitRequired");
+
+                Boolean certInApplicabilityRequired =
+                        (Boolean) rule.get("certInApplicabilityRequired");
+
+                Boolean trademarkProtectionRequired =
+                        (Boolean) rule.get("trademarkProtectionRequired");
+
+                Boolean softwareCopyrightRequired =
+                        (Boolean) rule.get("softwareCopyrightRequired");
 
                 Boolean hazardousMaterialRequired =
                         (Boolean) rule.get("hazardousMaterialRequired");
@@ -1213,6 +1243,7 @@ if ("required".equals(error)) {
 
                 if (ruleName == null) ruleName = "";
                 if (industry == null) industry = "";
+                if (businessConstitution == null) businessConstitution = "";
                 if (businessActivity == null) businessActivity = "";
                 if (projectStage == null) projectStage = "";
                 if (pollutionCategory == null) pollutionCategory = "";
@@ -1266,6 +1297,13 @@ if ("required".equals(error)) {
                             <%= businessActivity.isBlank()
                                     ? "Any"
                                     : businessActivity %>
+                        </div>
+
+                        <div class="small-text">
+                            <b>Constitution:</b>
+                            <%= businessConstitution.isBlank()
+                                    ? "Any"
+                                    : businessConstitution %>
                         </div>
 
                     </td>
@@ -1326,6 +1364,24 @@ if ("required".equals(error)) {
                         }
                         %>
 
+                        <div class="small-text">
+                            <b>Annual turnover:</b>
+                            <%
+                            if (minimumAnnualTurnover == null &&
+                                maximumAnnualTurnover == null) {
+                            %>
+                                Any
+                            <%
+                            } else {
+                            %>
+                                ₹<%= minimumAnnualTurnover != null ? minimumAnnualTurnover : "0" %>
+                                -
+                                <%= maximumAnnualTurnover != null ? "₹" + maximumAnnualTurnover : "No limit" %>
+                            <%
+                            }
+                            %>
+                        </div>
+
                     </td>
 
 
@@ -1379,6 +1435,34 @@ if ("required".equals(error)) {
                         <span class="condition <%= conditionClass(industrialWasteRequired) %>">
                             Waste:
                             <%= conditionText(industrialWasteRequired) %>
+                        </span>
+
+                        <span class="condition <%= conditionClass(interstateSupplyRequired) %>">
+                            Interstate: <%= conditionText(interstateSupplyRequired) %>
+                        </span>
+
+                        <span class="condition <%= conditionClass(handlesPersonalDataRequired) %>">
+                            Personal Data: <%= conditionText(handlesPersonalDataRequired) %>
+                        </span>
+
+                        <span class="condition <%= conditionClass(stpiBenefitsRequired) %>">
+                            STPI: <%= conditionText(stpiBenefitsRequired) %>
+                        </span>
+
+                        <span class="condition <%= conditionClass(sezUnitRequired) %>">
+                            SEZ: <%= conditionText(sezUnitRequired) %>
+                        </span>
+
+                        <span class="condition <%= conditionClass(certInApplicabilityRequired) %>">
+                            CERT-In: <%= conditionText(certInApplicabilityRequired) %>
+                        </span>
+
+                        <span class="condition <%= conditionClass(trademarkProtectionRequired) %>">
+                            Trademark: <%= conditionText(trademarkProtectionRequired) %>
+                        </span>
+
+                        <span class="condition <%= conditionClass(softwareCopyrightRequired) %>">
+                            Copyright: <%= conditionText(softwareCopyrightRequired) %>
                         </span>
 
                     </td>
@@ -1465,6 +1549,7 @@ if ("required".equals(error)) {
                                         '<%= approvalId %>',
                                         '<%= escapeJs(ruleName) %>',
                                         '<%= escapeJs(industry) %>',
+                                        '<%= escapeJs(businessConstitution) %>',
                                         '<%= escapeJs(businessActivity) %>',
                                         '<%= escapeJs(projectStage) %>',
                                         '<%= escapeJs(pollutionCategory) %>',
@@ -1473,6 +1558,15 @@ if ("required".equals(error)) {
                                         '<%= maximumEmployeeCount != null ? maximumEmployeeCount : "" %>',
                                         '<%= minimumInvestment != null ? minimumInvestment.toPlainString() : "" %>',
                                         '<%= maximumInvestment != null ? maximumInvestment.toPlainString() : "" %>',
+                                        '<%= minimumAnnualTurnover != null ? minimumAnnualTurnover.toPlainString() : "" %>',
+                                        '<%= maximumAnnualTurnover != null ? maximumAnnualTurnover.toPlainString() : "" %>',
+                                        '<%= booleanFormValue(interstateSupplyRequired) %>',
+                                        '<%= booleanFormValue(handlesPersonalDataRequired) %>',
+                                        '<%= booleanFormValue(stpiBenefitsRequired) %>',
+                                        '<%= booleanFormValue(sezUnitRequired) %>',
+                                        '<%= booleanFormValue(certInApplicabilityRequired) %>',
+                                        '<%= booleanFormValue(trademarkProtectionRequired) %>',
+                                        '<%= booleanFormValue(softwareCopyrightRequired) %>',
                                         '<%= booleanFormValue(hazardousMaterialRequired) %>',
                                         '<%= booleanFormValue(boilerRequired) %>',
                                         '<%= booleanFormValue(groundwaterRequired) %>',
@@ -1702,6 +1796,30 @@ if ("required".equals(error)) {
 
                     </div>
 
+                    <div class="form-group">
+                        <label>Business Constitution</label>
+                        <input type="text"
+                               name="businessConstitution"
+                               maxlength="50"
+                               placeholder="Example: Private Limited">
+                        <div class="field-help">Leave blank for any constitution.</div>
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Minimum Annual Turnover</label>
+                        <input type="number" min="0" step="0.01"
+                               name="minimumAnnualTurnover"
+                               placeholder="Leave blank for no minimum">
+                    </div>
+                    <div class="form-group">
+                        <label>Maximum Annual Turnover</label>
+                        <input type="number" min="0" step="0.01"
+                               name="maximumAnnualTurnover"
+                               placeholder="Leave blank for no maximum">
+                    </div>
                 </div>
 
 
@@ -1954,6 +2072,24 @@ if ("required".equals(error)) {
                 </div>
 
 
+                <div class="form-section-title">Digital & Location Conditions</div>
+
+                <div class="form-row">
+                    <div class="form-group"><label>Interstate Supply</label><select name="interstateSupplyRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                    <div class="form-group"><label>Handles Personal Data</label><select name="handlesPersonalDataRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>STPI Benefits</label><select name="stpiBenefitsRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                    <div class="form-group"><label>SEZ Unit</label><select name="sezUnitRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>CERT-In Applicability</label><select name="certInApplicabilityRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                    <div class="form-group"><label>Trademark Protection</label><select name="trademarkProtectionRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Software Copyright</label><select name="softwareCopyrightRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                </div>
+
                 <div class="form-section-title">
                     Recommendation Output
                 </div>
@@ -2164,6 +2300,29 @@ if ("required".equals(error)) {
 
                     </div>
 
+                    <div class="form-group">
+                        <label>Business Constitution</label>
+                        <input type="text"
+                               id="editBusinessConstitution"
+                               name="businessConstitution"
+                               maxlength="50">
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Minimum Annual Turnover</label>
+                        <input type="number" min="0" step="0.01"
+                               id="editMinimumAnnualTurnover"
+                               name="minimumAnnualTurnover">
+                    </div>
+                    <div class="form-group">
+                        <label>Maximum Annual Turnover</label>
+                        <input type="number" min="0" step="0.01"
+                               id="editMaximumAnnualTurnover"
+                               name="maximumAnnualTurnover">
+                    </div>
                 </div>
 
 
@@ -2388,6 +2547,24 @@ if ("required".equals(error)) {
 
                 </div>
 
+                <div class="form-section-title">Digital & Location Conditions</div>
+
+                <div class="form-row">
+                    <div class="form-group"><label>Interstate Supply</label><select id="editInterstateSupplyRequired" name="interstateSupplyRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                    <div class="form-group"><label>Handles Personal Data</label><select id="editHandlesPersonalDataRequired" name="handlesPersonalDataRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>STPI Benefits</label><select id="editStpiBenefitsRequired" name="stpiBenefitsRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                    <div class="form-group"><label>SEZ Unit</label><select id="editSezUnitRequired" name="sezUnitRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>CERT-In Applicability</label><select id="editCertInApplicabilityRequired" name="certInApplicabilityRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                    <div class="form-group"><label>Trademark Protection</label><select id="editTrademarkProtectionRequired" name="trademarkProtectionRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Software Copyright</label><select id="editSoftwareCopyrightRequired" name="softwareCopyrightRequired"><option value="ANY">Any</option><option value="YES">Yes</option><option value="NO">No</option></select></div>
+                </div>
+
 
                 <div class="form-section-title">
                     Recommendation Output
@@ -2482,17 +2659,27 @@ function closeAddModal() {
 function openEditModal(
         ruleId,
         approvalId,
-        ruleName,
-        industry,
-        businessActivity,
+	        ruleName,
+	        industry,
+	        businessConstitution,
+	        businessActivity,
         projectStage,
         pollutionCategory,
         state,
         minimumEmployeeCount,
         maximumEmployeeCount,
-        minimumInvestment,
-        maximumInvestment,
-        hazardousMaterialRequired,
+	        minimumInvestment,
+	        maximumInvestment,
+	        minimumAnnualTurnover,
+	        maximumAnnualTurnover,
+	        interstateSupplyRequired,
+	        handlesPersonalDataRequired,
+	        stpiBenefitsRequired,
+	        sezUnitRequired,
+	        certInApplicabilityRequired,
+	        trademarkProtectionRequired,
+	        softwareCopyrightRequired,
+	        hazardousMaterialRequired,
         boilerRequired,
         groundwaterRequired,
         industrialWasteRequired,
@@ -2515,6 +2702,10 @@ function openEditModal(
     document.getElementById(
         "editIndustry"
     ).value = industry;
+
+    document.getElementById(
+        "editBusinessConstitution"
+    ).value = businessConstitution;
 
     document.getElementById(
         "editBusinessActivity"
@@ -2547,6 +2738,16 @@ function openEditModal(
     document.getElementById(
         "editMaximumInvestment"
     ).value = maximumInvestment;
+
+    document.getElementById("editMinimumAnnualTurnover").value = minimumAnnualTurnover;
+    document.getElementById("editMaximumAnnualTurnover").value = maximumAnnualTurnover;
+    document.getElementById("editInterstateSupplyRequired").value = interstateSupplyRequired;
+    document.getElementById("editHandlesPersonalDataRequired").value = handlesPersonalDataRequired;
+    document.getElementById("editStpiBenefitsRequired").value = stpiBenefitsRequired;
+    document.getElementById("editSezUnitRequired").value = sezUnitRequired;
+    document.getElementById("editCertInApplicabilityRequired").value = certInApplicabilityRequired;
+    document.getElementById("editTrademarkProtectionRequired").value = trademarkProtectionRequired;
+    document.getElementById("editSoftwareCopyrightRequired").value = softwareCopyrightRequired;
 
     document.getElementById(
         "editHazardousMaterialRequired"

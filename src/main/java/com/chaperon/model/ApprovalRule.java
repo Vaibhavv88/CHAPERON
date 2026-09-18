@@ -9,6 +9,7 @@ public class ApprovalRule {
     private long approvalId;
 
     private String industry;
+    private String businessConstitution;
     private String businessActivity;
     private String projectStage;
     private String state;
@@ -24,6 +25,16 @@ public class ApprovalRule {
 
     private BigDecimal minimumInvestment;
     private BigDecimal maximumInvestment;
+    private BigDecimal minimumAnnualTurnover;
+    private BigDecimal maximumAnnualTurnover;
+
+    private Boolean interstateSupplyRequired;
+    private Boolean handlesPersonalDataRequired;
+    private Boolean stpiBenefitsRequired;
+    private Boolean sezUnitRequired;
+    private Boolean certInApplicabilityRequired;
+    private Boolean trademarkProtectionRequired;
+    private Boolean softwareCopyrightRequired;
 
     private String priorityLevel;
 
@@ -59,6 +70,14 @@ public class ApprovalRule {
 
     public void setIndustry(String industry) {
         this.industry = industry;
+    }
+
+    public String getBusinessConstitution() {
+        return businessConstitution;
+    }
+
+    public void setBusinessConstitution(String businessConstitution) {
+        this.businessConstitution = businessConstitution;
     }
 
     public String getBusinessActivity() {
@@ -178,6 +197,78 @@ public class ApprovalRule {
 
         this.maximumInvestment =
                 maximumInvestment;
+    }
+
+    public BigDecimal getMinimumAnnualTurnover() {
+        return minimumAnnualTurnover;
+    }
+
+    public void setMinimumAnnualTurnover(BigDecimal minimumAnnualTurnover) {
+        this.minimumAnnualTurnover = minimumAnnualTurnover;
+    }
+
+    public BigDecimal getMaximumAnnualTurnover() {
+        return maximumAnnualTurnover;
+    }
+
+    public void setMaximumAnnualTurnover(BigDecimal maximumAnnualTurnover) {
+        this.maximumAnnualTurnover = maximumAnnualTurnover;
+    }
+
+    public Boolean getInterstateSupplyRequired() {
+        return interstateSupplyRequired;
+    }
+
+    public void setInterstateSupplyRequired(Boolean interstateSupplyRequired) {
+        this.interstateSupplyRequired = interstateSupplyRequired;
+    }
+
+    public Boolean getHandlesPersonalDataRequired() {
+        return handlesPersonalDataRequired;
+    }
+
+    public void setHandlesPersonalDataRequired(Boolean handlesPersonalDataRequired) {
+        this.handlesPersonalDataRequired = handlesPersonalDataRequired;
+    }
+
+    public Boolean getStpiBenefitsRequired() {
+        return stpiBenefitsRequired;
+    }
+
+    public void setStpiBenefitsRequired(Boolean stpiBenefitsRequired) {
+        this.stpiBenefitsRequired = stpiBenefitsRequired;
+    }
+
+    public Boolean getSezUnitRequired() {
+        return sezUnitRequired;
+    }
+
+    public void setSezUnitRequired(Boolean sezUnitRequired) {
+        this.sezUnitRequired = sezUnitRequired;
+    }
+
+    public Boolean getCertInApplicabilityRequired() {
+        return certInApplicabilityRequired;
+    }
+
+    public void setCertInApplicabilityRequired(Boolean certInApplicabilityRequired) {
+        this.certInApplicabilityRequired = certInApplicabilityRequired;
+    }
+
+    public Boolean getTrademarkProtectionRequired() {
+        return trademarkProtectionRequired;
+    }
+
+    public void setTrademarkProtectionRequired(Boolean trademarkProtectionRequired) {
+        this.trademarkProtectionRequired = trademarkProtectionRequired;
+    }
+
+    public Boolean getSoftwareCopyrightRequired() {
+        return softwareCopyrightRequired;
+    }
+
+    public void setSoftwareCopyrightRequired(Boolean softwareCopyrightRequired) {
+        this.softwareCopyrightRequired = softwareCopyrightRequired;
     }
 
     public String getPriorityLevel() {

@@ -21,6 +21,8 @@ public class Business {
 
     private String projectStage;
     private BigDecimal investmentAmount;
+    private BigDecimal annualTurnover;
+    private boolean interstateSupply;
     private int employeeCount;
     private BigDecimal landArea;
     private BigDecimal builtUpArea;
@@ -33,6 +35,13 @@ public class Business {
     private boolean boilerUsed;
     private boolean industrialWaste;
     private boolean groundwaterRequired;
+
+    private boolean handlesPersonalData;
+    private boolean seeksStpiBenefits;
+    private boolean locatedInSez;
+    private boolean certInApplicable;
+    private boolean seeksTrademarkProtection;
+    private boolean seeksSoftwareCopyright;
 
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -144,6 +153,22 @@ public class Business {
         this.investmentAmount = investmentAmount;
     }
 
+    public BigDecimal getAnnualTurnover() {
+        return annualTurnover;
+    }
+
+    public void setAnnualTurnover(BigDecimal annualTurnover) {
+        this.annualTurnover = annualTurnover;
+    }
+
+    public boolean isInterstateSupply() {
+        return interstateSupply;
+    }
+
+    public void setInterstateSupply(boolean interstateSupply) {
+        this.interstateSupply = interstateSupply;
+    }
+
     public int getEmployeeCount() {
         return employeeCount;
     }
@@ -222,6 +247,60 @@ public class Business {
 
     public void setGroundwaterRequired(boolean groundwaterRequired) {
         this.groundwaterRequired = groundwaterRequired;
+    }
+
+    public boolean isHandlesPersonalData() {
+        return handlesPersonalData;
+    }
+
+    public void setHandlesPersonalData(boolean handlesPersonalData) {
+        this.handlesPersonalData = handlesPersonalData;
+    }
+
+    public boolean isSeeksStpiBenefits() {
+        return seeksStpiBenefits;
+    }
+
+    public void setSeeksStpiBenefits(boolean seeksStpiBenefits) {
+        this.seeksStpiBenefits = seeksStpiBenefits;
+    }
+
+    public boolean isLocatedInSez() {
+        return locatedInSez;
+    }
+
+    public void setLocatedInSez(boolean locatedInSez) {
+        this.locatedInSez = locatedInSez;
+    }
+
+    public boolean isCertInApplicable() {
+        return certInApplicable;
+    }
+
+    public void setCertInApplicable(boolean certInApplicable) {
+        this.certInApplicable = certInApplicable;
+    }
+
+    public boolean isSeeksTrademarkProtection() {
+        return seeksTrademarkProtection;
+    }
+
+    public void setSeeksTrademarkProtection(
+            boolean seeksTrademarkProtection) {
+
+        this.seeksTrademarkProtection =
+                seeksTrademarkProtection;
+    }
+
+    public boolean isSeeksSoftwareCopyright() {
+        return seeksSoftwareCopyright;
+    }
+
+    public void setSeeksSoftwareCopyright(
+            boolean seeksSoftwareCopyright) {
+
+        this.seeksSoftwareCopyright =
+                seeksSoftwareCopyright;
     }
 
     public Timestamp getCreatedAt() {

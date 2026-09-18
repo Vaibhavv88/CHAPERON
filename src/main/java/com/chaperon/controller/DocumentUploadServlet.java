@@ -13,6 +13,7 @@ import com.chaperon.dao.impl.DocumentDAOImpl;
 import com.chaperon.model.Business;
 import com.chaperon.model.Document;
 import com.chaperon.service.BusinessService;
+import com.chaperon.service.DocumentTypeCatalogService;
 import com.chaperon.service.impl.BusinessServiceImpl;
 
 import jakarta.servlet.ServletException;
@@ -36,6 +37,7 @@ public class DocumentUploadServlet extends HttpServlet {
 
     private DocumentDAO documentDAO;
     private BusinessService businessService;
+    private DocumentTypeCatalogService documentTypeCatalogService;
 
     @Override
     public void init() throws ServletException {
@@ -45,6 +47,9 @@ public class DocumentUploadServlet extends HttpServlet {
 
         businessService =
                 new BusinessServiceImpl();
+
+        documentTypeCatalogService =
+                new DocumentTypeCatalogService();
     }
 
     @Override
@@ -53,86 +58,239 @@ public class DocumentUploadServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
 
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        /*
+         * ==========================================
+         * SESSION VALIDATION
+         * ==========================================
+         */
         HttpSession session =
                 request.getSession(false);
 
         if (session == null ||
-            session.getAttribute("userId") == null) {
+                session.getAttribute("userId") == null) {
 
             response.sendRedirect(
                     request.getContextPath()
-                    + "/entrepreneur-login"
+                            + "/entrepreneur-login"
             );
+            return;
+        }
 
+        Object userIdObject =
+                session.getAttribute("userId");
+
+        if (!(userIdObject instanceof Number)) {
+
+            session.invalidate();
+
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/entrepreneur-login"
+            );
             return;
         }
 
         long userId =
-                ((Number) session
-                        .getAttribute("userId"))
+                ((Number) userIdObject)
                         .longValue();
 
-        String documentType =
-                request.getParameter("documentType");
+        /*
+         * ==========================================
+         * ROLE VALIDATION
+         * ==========================================
+         */
+        Object userRoleObject =
+                session.getAttribute("userRole");
 
-        Part filePart =
-                request.getPart("documentFile");
+        if (userRoleObject != null) {
+
+            String userRole =
+                    String.valueOf(userRoleObject);
+
+            if (!"ENTREPRENEUR"
+                    .equalsIgnoreCase(userRole)) {
+
+                response.sendError(
+                        HttpServletResponse.SC_FORBIDDEN,
+                        "Entrepreneur access is required."
+                );
+                return;
+            }
+        }
+
+        /*
+         * ==========================================
+         * DOCUMENT TYPE
+         * ==========================================
+         *
+         * No hardcoded allowed-document Set is used.
+         *
+         * This supports:
+         * - INSTALLATION_DETAILS
+         * - TEST_CERTIFICATE
+         * - FORM_B
+         * - CTE_CERTIFICATE
+         * - Future Admin-added document types
+         */
+        String documentType =
+                documentTypeCatalogService
+                        .normalizeDocumentCode(
+                                request.getParameter(
+                                        "documentType"
+                                )
+                        );
 
         if (documentType == null ||
-            documentType.isBlank()) {
+                documentType.isBlank()) {
 
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Document type is required."
+            redirectWithError(
+                    request,
+                    response,
+                    "type-required"
+            );
+            return;
+        }
+
+        /*
+         * Only safe uppercase document codes are accepted.
+         *
+         * Examples:
+         * PAN
+         * INSTALLATION_DETAILS
+         * TEST_CERTIFICATE
+         */
+        if (!documentType.matches(
+                "^[A-Z0-9][A-Z0-9_]{0,99}$"
+        )) {
+
+            redirectWithError(
+                    request,
+                    response,
+                    "invalid-type"
+            );
+            return;
+        }
+
+        /*
+         * ==========================================
+         * MULTIPART FILE
+         * ==========================================
+         */
+        Part filePart;
+
+        try {
+
+            filePart =
+                    request.getPart(
+                            "documentFile"
+                    );
+
+        } catch (IllegalStateException exception) {
+
+            redirectWithError(
+                    request,
+                    response,
+                    "file-too-large"
+            );
+            return;
+
+        } catch (ServletException exception) {
+
+            log(
+                    "Unable to read multipart request.",
+                    exception
             );
 
+            redirectWithError(
+                    request,
+                    response,
+                    "invalid-upload"
+            );
             return;
         }
 
         if (filePart == null ||
-            filePart.getSize() <= 0) {
+                filePart.getSize() <= 0) {
 
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Please select a file."
+            redirectWithError(
+                    request,
+                    response,
+                    "file-required"
             );
-
             return;
         }
 
+        /*
+         * ==========================================
+         * ORIGINAL FILE NAME
+         * ==========================================
+         */
         String originalFileName =
-                filePart.getSubmittedFileName();
+                getSafeFileName(
+                        filePart.getSubmittedFileName()
+                );
 
         if (originalFileName == null ||
-            originalFileName.isBlank()) {
+                originalFileName.isBlank()) {
 
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Invalid file."
+            redirectWithError(
+                    request,
+                    response,
+                    "invalid-file"
             );
-
             return;
         }
 
+        /*
+         * ==========================================
+         * FILE EXTENSION
+         * ==========================================
+         */
         String extension =
                 getExtension(
                         originalFileName
                 );
 
-        if (!isAllowedExtension(
-                extension
-        )) {
+        if (!isAllowedExtension(extension)) {
 
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Only PDF, JPG, JPEG and PNG files are allowed."
+            redirectWithError(
+                    request,
+                    response,
+                    "invalid-extension"
             );
-
             return;
         }
 
+        /*
+         * ==========================================
+         * CONTENT TYPE
+         * ==========================================
+         */
+        String contentType =
+                filePart.getContentType();
+
+        if (!isAllowedContentType(contentType)) {
+
+            redirectWithError(
+                    request,
+                    response,
+                    "invalid-content"
+            );
+            return;
+        }
+
+        Path destination = null;
+
         try {
 
+            /*
+             * ======================================
+             * LOAD BUSINESS
+             * ======================================
+             */
             Business business =
                     businessService
                             .getBusinessByUserId(
@@ -141,64 +299,77 @@ public class DocumentUploadServlet extends HttpServlet {
 
             if (business == null) {
 
-                response.sendError(
-                        HttpServletResponse.SC_BAD_REQUEST,
-                        "Business profile not found."
+                redirectWithError(
+                        request,
+                        response,
+                        "business-not-found"
                 );
-
                 return;
             }
 
             long businessId =
                     business.getBusinessId();
 
+            /*
+             * ======================================
+             * GENERATE STORED FILE NAME
+             * ======================================
+             */
             String storedFileName =
                     UUID.randomUUID()
-                    .toString()
-                    + "."
-                    + extension;
+                            .toString()
+                            + "."
+                            + extension;
 
+            /*
+             * ======================================
+             * UPLOAD DIRECTORY
+             * ======================================
+             */
             String uploadRoot =
                     System.getProperty(
                             "user.home"
                     )
-                    + File.separator
-                    + "CHAPERON_UPLOADS"
-                    + File.separator
-                    + "business_"
-                    + businessId;
+                            + File.separator
+                            + "CHAPERON_UPLOADS"
+                            + File.separator
+                            + "business_"
+                            + businessId;
 
-            File uploadDirectory =
-                    new File(
-                            uploadRoot
-                    );
+            Path uploadDirectory =
+                    Path.of(uploadRoot);
 
-            if (!uploadDirectory.exists()) {
+            Files.createDirectories(
+                    uploadDirectory
+            );
 
-                boolean created =
-                        uploadDirectory.mkdirs();
-
-                if (!created &&
-                    !uploadDirectory.exists()) {
-
-                    throw new IOException(
-                            "Unable to create upload directory."
-                    );
-                }
-            }
-
-            Path destination =
-                    Path.of(
-                            uploadRoot,
+            destination =
+                    uploadDirectory.resolve(
                             storedFileName
                     );
 
-            Files.copy(
-                    filePart.getInputStream(),
-                    destination,
-                    StandardCopyOption.REPLACE_EXISTING
-            );
+            /*
+             * ======================================
+             * SAVE PHYSICAL FILE
+             * ======================================
+             */
+            try (
+                var inputStream =
+                        filePart.getInputStream()
+            ) {
 
+                Files.copy(
+                        inputStream,
+                        destination,
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+            }
+
+            /*
+             * ======================================
+             * CREATE DOCUMENT MODEL
+             * ======================================
+             */
             Document document =
                     new Document();
 
@@ -234,6 +405,11 @@ public class DocumentUploadServlet extends HttpServlet {
                     extension
             );
 
+            /*
+             * ======================================
+             * SAVE DOCUMENT METADATA
+             * ======================================
+             */
             long documentId =
                     documentDAO.save(
                             document
@@ -245,53 +421,173 @@ public class DocumentUploadServlet extends HttpServlet {
                         destination
                 );
 
-                response.sendError(
-                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "Document metadata could not be saved."
+                redirectWithError(
+                        request,
+                        response,
+                        "save-failed"
                 );
-
                 return;
             }
 
+            /*
+             * ======================================
+             * SUCCESS
+             * ======================================
+             */
             response.sendRedirect(
                     request.getContextPath()
-                    + "/entrepreneur/documents?uploaded=1"
+                            + "/entrepreneur/documents"
+                            + "?uploaded=1"
             );
 
-        } catch (SQLException e) {
+        } catch (SQLException exception) {
+
+            deleteUploadedFile(
+                    destination
+            );
 
             log(
-                    "Unable to save uploaded document",
-                    e
+                    "Unable to save document metadata. "
+                            + "User ID: "
+                            + userId
+                            + ", Document type: "
+                            + documentType,
+                    exception
             );
 
-            response.sendError(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Unable to save document."
+            redirectWithError(
+                    request,
+                    response,
+                    "database"
+            );
+
+        } catch (IOException exception) {
+
+            deleteUploadedFile(
+                    destination
+            );
+
+            log(
+                    "Unable to save document file. "
+                            + "User ID: "
+                            + userId
+                            + ", Document type: "
+                            + documentType,
+                    exception
+            );
+
+            redirectWithError(
+                    request,
+                    response,
+                    "storage"
             );
         }
     }
 
+    /*
+     * ==============================================
+     * ERROR REDIRECT
+     * ==============================================
+     */
+    private void redirectWithError(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            String errorCode
+    ) throws IOException {
+
+        response.sendRedirect(
+                request.getContextPath()
+                        + "/entrepreneur/documents"
+                        + "?error="
+                        + errorCode
+        );
+    }
+
+    /*
+     * ==============================================
+     * DELETE INCOMPLETE UPLOAD
+     * ==============================================
+     */
+    private void deleteUploadedFile(
+            Path destination
+    ) {
+
+        if (destination == null) {
+            return;
+        }
+
+        try {
+
+            Files.deleteIfExists(
+                    destination
+            );
+
+        } catch (IOException exception) {
+
+            log(
+                    "Unable to delete incomplete file: "
+                            + destination,
+                    exception
+            );
+        }
+    }
+
+    /*
+     * ==============================================
+     * SAFE ORIGINAL FILE NAME
+     * ==============================================
+     */
+    private String getSafeFileName(
+            String submittedFileName
+    ) {
+
+        if (submittedFileName == null ||
+                submittedFileName.isBlank()) {
+
+            return null;
+        }
+
+        return Path.of(
+                submittedFileName
+        )
+                .getFileName()
+                .toString();
+    }
+
+    /*
+     * ==============================================
+     * FILE EXTENSION
+     * ==============================================
+     */
     private String getExtension(
             String fileName
     ) {
 
+        if (fileName == null ||
+                fileName.isBlank()) {
+
+            return "";
+        }
+
         int lastDot =
                 fileName.lastIndexOf('.');
 
-        if (lastDot == -1 ||
-            lastDot == fileName.length() - 1) {
+        if (lastDot < 0 ||
+                lastDot == fileName.length() - 1) {
 
             return "";
         }
 
         return fileName
-                .substring(
-                        lastDot + 1
-                )
+                .substring(lastDot + 1)
                 .toLowerCase();
     }
 
+    /*
+     * ==============================================
+     * ALLOWED EXTENSIONS
+     * ==============================================
+     */
     private boolean isAllowedExtension(
             String extension
     ) {
@@ -300,5 +596,30 @@ public class DocumentUploadServlet extends HttpServlet {
                 || "jpg".equals(extension)
                 || "jpeg".equals(extension)
                 || "png".equals(extension);
+    }
+
+    /*
+     * ==============================================
+     * ALLOWED MIME TYPES
+     * ==============================================
+     */
+    private boolean isAllowedContentType(
+            String contentType
+    ) {
+
+        if (contentType == null ||
+                contentType.isBlank()) {
+
+            return false;
+        }
+
+        return "application/pdf"
+                .equalsIgnoreCase(contentType)
+
+                || "image/jpeg"
+                .equalsIgnoreCase(contentType)
+
+                || "image/png"
+                .equalsIgnoreCase(contentType);
     }
 }

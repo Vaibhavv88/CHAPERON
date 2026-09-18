@@ -1,6 +1,7 @@
 package com.chaperon.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 
 import com.chaperon.model.Business;
@@ -116,6 +117,12 @@ public class BusinessOnboardingStep4Servlet extends HttpServlet {
         String investmentText =
                 clean(request.getParameter("estimatedInvestment"));
 
+        String annualTurnoverText =
+                clean(request.getParameter("annualTurnover"));
+
+        boolean interstateSupply =
+                isChecked(request.getParameter("interstateSupply"));
+
         String employeesText =
                 clean(request.getParameter("expectedEmployees"));
 
@@ -149,6 +156,9 @@ public class BusinessOnboardingStep4Servlet extends HttpServlet {
             double estimatedInvestment =
                     Double.parseDouble(investmentText);
 
+            BigDecimal annualTurnover =
+                    parseOptionalBigDecimal(annualTurnoverText);
+
             int expectedEmployees =
                     Integer.parseInt(employeesText);
 
@@ -165,11 +175,13 @@ public class BusinessOnboardingStep4Servlet extends HttpServlet {
                     parseOptionalDouble(waterText);
 
             if (estimatedInvestment < 0 ||
-                expectedEmployees < 0) {
+                expectedEmployees < 0 ||
+                (annualTurnover != null &&
+                 annualTurnover.signum() < 0)) {
 
                 request.setAttribute(
                         "errorMessage",
-                        "Investment and employee count cannot be negative."
+                        "Investment, annual turnover and employee count cannot be negative."
                 );
 
                 doGet(request, response);
@@ -193,6 +205,9 @@ public class BusinessOnboardingStep4Servlet extends HttpServlet {
             business.setInvestmentAmount(
                     java.math.BigDecimal.valueOf(estimatedInvestment)
             		);
+
+                    business.setAnnualTurnover(annualTurnover);
+                    business.setInterstateSupply(interstateSupply);
 
             		business.setEmployeeCount(expectedEmployees);
             		business.setLandArea(
@@ -283,5 +298,22 @@ public class BusinessOnboardingStep4Servlet extends HttpServlet {
         }
 
         return Double.parseDouble(value);
+    }
+
+    private BigDecimal parseOptionalBigDecimal(String value) {
+
+        if (value == null) {
+            return null;
+        }
+
+        return new BigDecimal(value);
+    }
+
+    private boolean isChecked(String value) {
+
+        return "true".equalsIgnoreCase(value) ||
+               "on".equalsIgnoreCase(value) ||
+               "1".equals(value) ||
+               "yes".equalsIgnoreCase(value);
     }
 }
