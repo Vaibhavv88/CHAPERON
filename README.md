@@ -18,11 +18,11 @@
 
 </p>
 
-<!-- <p align="center">
+<p align="center">
   <a href="https://chaperon-production.up.railway.app/">
     🌐 Live Demo
   </a>
-</p> -->
+</p>
 
 ---
 
