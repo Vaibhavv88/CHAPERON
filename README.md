@@ -2,15 +2,15 @@
 
 
 
-<p align="center">
+<p >
   <strong>GUIDE. CONNECT. COMPLY. GET APPROVED.</strong>
 </p>
 
-<p align="center">
+<p >
   <em>From Business Idea to Approval — One Intelligent Journey</em>
 </p>
 
-<p align="center">
+<p>
 
 ![Status](https://img.shields.io/badge/Status-Prototype-blue)
 ![Category](https://img.shields.io/badge/SIH-26130-0057B8)
@@ -18,7 +18,7 @@
 
 </p>
 
-<p align="center">
+<p >
   <a href="https://chaperon-production.up.railway.app/">
     🌐 Live Demo
   </a>
